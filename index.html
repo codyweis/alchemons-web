@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alchemons – Breed. Explore. Discover.</title>
+  <meta name="description" content="Over 100 Alchemons with unique abilities. 17 elemental types. Open space exploration, roguelike tower defense, and legendary bosses." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --deep-purple: #0d0818;
+      --warm-gold: #e8a030;
+      --bright-gold: #f5c842;
+      --amber: #ff7a20;
+      --amber-soft: #ff9a50;
+      --teal: #3dd6c8;
+      --stone-light: #c8d8e8;
+      --text: #f0e8d8;
+      --text-muted: #9080a0;
+      --green-glow: #4ecb71;
+      --border: rgba(232,160,48,0.2);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--deep-purple); color: var(--text); font-family: 'Nunito', sans-serif; font-weight: 400; overflow-x: hidden; line-height: 1.7; }
+
+    /* ── STARFIELD ── */
+    .starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .star { position: absolute; border-radius: 50%; background: white; animation: twinkle var(--dur) ease-in-out infinite var(--delay); opacity: 0; }
+    @keyframes twinkle { 0%,100%{opacity:0;transform:scale(0.8)} 50%{opacity:var(--max-op);transform:scale(1)} }
+
+    /* ── NAV ── */
+    nav { position: fixed; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; justify-content:space-between; padding:20px 60px; background:linear-gradient(to bottom,rgba(13,8,24,0.95),transparent); transition:background 0.3s; }
+    nav.scrolled { background:rgba(13,8,24,0.97); border-bottom:1px solid var(--border); backdrop-filter:blur(12px); }
+    .nav-logo { font-family:'Cinzel Decorative',cursive; font-size:22px; font-weight:700; color:var(--bright-gold); letter-spacing:2px; text-shadow:0 0 30px rgba(245,200,66,0.6); text-decoration:none; display:flex; align-items:center; gap:10px; }
+    .nav-logo img { width:32px; height:32px; border-radius:8px; object-fit:cover; }
+    .nav-links { display:flex; gap:36px; list-style:none; }
+    .nav-links a { font-family:'Cinzel',serif; font-size:13px; letter-spacing:1.5px; color:var(--text-muted); text-decoration:none; text-transform:uppercase; transition:color 0.2s; }
+    .nav-links a:hover { color:var(--warm-gold); }
+
+    /* ── HERO ── */
+    .hero { position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 60px 80px; overflow:hidden; }
+    .hero-bg { position:absolute; inset:0; background: radial-gradient(ellipse 90% 70% at 60% 40%,rgba(74,32,96,0.8),transparent 60%), radial-gradient(ellipse 60% 50% at 15% 80%,rgba(255,122,32,0.12),transparent 50%), radial-gradient(ellipse 50% 50% at 85% 20%,rgba(61,214,200,0.07),transparent 50%), linear-gradient(160deg,#2a1545 0%,#1a0e2e 40%,#0d0818 100%); z-index:0; }
+    .hero-horizon { position:absolute; bottom:0; left:0; right:0; height:250px; background:linear-gradient(to top,rgba(255,100,20,0.07),transparent); z-index:1; }
+    .orb { position:absolute; border-radius:50%; filter:blur(2px); animation:floatOrb var(--dur,8s) ease-in-out infinite var(--delay,0s); z-index:2; }
+    @keyframes floatOrb { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(var(--dx,20px),var(--dy,-20px)) scale(1.06)} 66%{transform:translate(calc(var(--dx,20px)*-0.4),calc(var(--dy,-20px)*0.6)) scale(0.94)} }
+
+    .hero-left { position:relative; z-index:10; max-width:720px; }
+    .hero-eyebrow { font-family:'Cinzel',serif; font-size:11px; letter-spacing:5px; text-transform:uppercase; color:var(--warm-gold); margin-bottom:20px; opacity:0; animation:fadeUp 0.8s ease forwards 0.2s; display:flex; align-items:center; gap:10px; }
+    .hero-eyebrow::before, .hero-eyebrow::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,rgba(232,160,48,0.4)); }
+    .hero-eyebrow::after { background:linear-gradient(to left,transparent,rgba(232,160,48,0.4)); }
+    .hero-title { font-family:'Cinzel Decorative',cursive; font-size:clamp(56px,7vw,96px); font-weight:900; line-height:0.95; letter-spacing:-1px; background:linear-gradient(135deg,#f5c842 0%,#ff9a50 40%,#f5c842 75%,#fff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 50px rgba(245,200,66,0.35)); opacity:0; animation:fadeUp 1s ease forwards 0.4s; margin-bottom:16px; }
+    .hero-tagline { font-family:'Cinzel',serif; font-size:clamp(13px,1.6vw,18px); font-weight:400; letter-spacing:4px; text-transform:uppercase; color:var(--stone-light); opacity:0; animation:fadeUp 1s ease forwards 0.65s; margin-bottom:28px; }
+    .hero-desc { font-size:16px; color:var(--text-muted); max-width:580px; margin:0 auto; opacity:0; animation:fadeUp 1s ease forwards 0.85s; line-height:1.85; margin-bottom:40px; }
+    .hero-buttons { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; opacity:0; animation:fadeUp 1s ease forwards 1.05s; }
+    @keyframes heroFloat { 0%,100%{transform:translateY(0) rotate(-0.5deg)} 50%{transform:translateY(-18px) rotate(0.5deg)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    .btn-primary { display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg,#ff7a20,#e8a030,#f5c842); color:#1a0800; font-family:'Cinzel',serif; font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:15px 34px; border-radius:50px; text-decoration:none; box-shadow:0 0 40px rgba(255,122,32,0.5),0 4px 20px rgba(0,0,0,0.4); transition:transform 0.25s,box-shadow 0.25s; }
+    .btn-primary:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 0 60px rgba(255,122,32,0.8),0 8px 30px rgba(0,0,0,0.4); }
+    .btn-secondary { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.06); color:var(--text); font-family:'Cinzel',serif; font-size:13px; letter-spacing:2px; text-transform:uppercase; padding:15px 34px; border-radius:50px; border:1px solid rgba(245,200,66,0.25); text-decoration:none; backdrop-filter:blur(8px); transition:transform 0.25s,border-color 0.25s,background 0.25s; }
+    .btn-secondary:hover { transform:translateY(-3px); border-color:rgba(245,200,66,0.6); background:rgba(255,255,255,0.1); }
+
+    .hero-scroll-hint { position:relative; margin-top:20px; z-index:10; display:flex; flex-direction:column; align-items:center; gap:8px; opacity:0; animation:fadeUp 1s ease forwards 2.2s; }
+    .hero-scroll-hint span { font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:rgba(232,160,48,0.6); }
+    .scroll-arrow { width:18px; height:18px; border-right:2px solid rgba(232,160,48,0.5); border-bottom:2px solid rgba(232,160,48,0.5); transform:rotate(45deg); animation:bounceDown 1.5s ease-in-out infinite; }
+    @keyframes bounceDown { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+
+    /* ── STATS ── */
+    .stats-bar { position:relative; z-index:10; background:rgba(255,255,255,0.025); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:32px 60px; display:flex; justify-content:center; gap:0; flex-wrap:wrap; }
+    .stat-item { text-align:center; padding:0 44px; border-right:1px solid var(--border); }
+    .stat-item:last-child { border-right:none; }
+    .stat-number { font-family:'Cinzel Decorative',cursive; font-size:36px; font-weight:700; color:var(--bright-gold); text-shadow:0 0 20px rgba(245,200,66,0.5); display:block; }
+    .stat-label { font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-top:4px; }
+
+    /* ── SHARED ── */
+    section { position:relative; z-index:10; }
+    .section-label { font-family:'Cinzel',serif; font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(--warm-gold); margin-bottom:12px; justify-content:center; }
+    .section-title { font-family:'Cinzel Decorative',cursive; font-size:clamp(24px,4.5vw,44px); font-weight:700; line-height:1.2; margin-bottom:18px; background:linear-gradient(135deg,var(--text) 0%,var(--warm-gold) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .section-desc { font-size:16px; color:var(--text-muted); max-width:500px; line-height:1.8; }
+    .fade-in { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease,transform 0.7s ease; }
+    .fade-in.visible { opacity:1; transform:translateY(0); }
+
+    /* ── CREATURES SHOWCASE ── */
+    #creatures { padding:100px 60px; background:linear-gradient(180deg,transparent,rgba(42,21,69,0.2),transparent); }
+    .creatures-inner { max-width:1200px; margin:0 auto; }
+    .creatures-header { text-align:center; margin-bottom:70px; }
+    .creatures-header .section-desc { margin:0 auto; }
+
+    .sprite-showcase {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:24px;
+      margin-bottom:60px;
+    }
+    .sprite-card {
+      background:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:40px 28px 32px;
+      display:flex; flex-direction:column; align-items:center;
+      transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;
+      cursor:default; overflow:hidden; position:relative;
+    }
+    .sprite-card:hover { transform:translateY(-10px); border-color:rgba(232,160,48,0.5); box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 40px rgba(232,160,48,0.1); }
+    .sprite-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 0%,var(--card-glow,rgba(232,160,48,0.08)),transparent 60%); pointer-events:none; }
+
+    /* CSS sprite animation — 4 frames, 2000px wide sheet, frame=500px */
+    .sprite {
+      width:120px; height:120px;
+      image-rendering:pixelated;
+      background-repeat:no-repeat;
+      background-size:400% auto; /* 4 frames → 400% shows one at a time */
+      animation:walkAnim 0.6s steps(1) infinite;
+      margin-bottom:24px;
+      filter:drop-shadow(0 8px 20px var(--sprite-glow,rgba(232,160,48,0.4)));
+    }
+    @keyframes walkAnim {
+      0%   { background-position: 0% 0; }
+      25%  { background-position: 33.333% 0; }
+      50%  { background-position: 66.666% 0; }
+      75%  { background-position: 100% 0; }
+    }
+    .sprite-darkmane { background-image:url('darkmane.png'); --sprite-glow:rgba(100,120,200,0.5); }
+    .sprite-lavamask  { background-image:url('lavamask.png'); --sprite-glow:rgba(255,100,20,0.6); }
+    .sprite-dustkin   { background-image:url('dustkin.png');  --sprite-glow:rgba(210,170,60,0.5); }
+    .sprite-pip       { background-image:url('airpip.png'); --sprite-glow:rgba(255,255,255,0.35); }
+    .sprite-firelet   { background-image:url('firelet.png'); --sprite-glow:rgba(255,100,20,0.6); }
+    .sprite-mane      { background-image:url('darkmane.png'); --sprite-glow:rgba(100,120,200,0.5); }
+    .sprite-horn      { background-image:url('poisonhorn.png'); --sprite-glow:rgba(200,160,200,0.4); }
+    .sprite-mask      { background-image:url('lavamask.png'); --sprite-glow:rgba(255,80,0,0.6); }
+    .sprite-wing      { background-image:url('plantwing.png'); --sprite-glow:rgba(100,200,255,0.4); }
+    .sprite-kin       { background-image:url('dustkin.png'); --sprite-glow:rgba(210,170,60,0.5); }
+    .sprite-leviathan { background-image:url('watermystic.png'); --sprite-glow:rgba(64,184,255,0.5); }
+
+    .sprite-name { font-family:'Cinzel',serif; font-size:17px; color:var(--text); margin-bottom:6px; }
+    .sprite-type { font-size:12px; letter-spacing:1.5px; text-transform:uppercase; padding:4px 14px; border-radius:20px; border:1px solid; background:rgba(255,255,255,0.05); }
+    .sprite-flavor { font-size:13px; color:var(--text-muted); margin-top:12px; text-align:center; line-height:1.6; }
+
+    .creatures-cta { text-align:center; }
+    .creatures-cta p { font-size:15px; color:var(--text-muted); margin-bottom:20px; }
+
+    /* ── TYPES GRID ── */
+    #types { padding:100px 60px; max-width:1200px; margin:0 auto; }
+    .types-header { text-align:center; margin-bottom:60px; }
+    .types-header .section-desc { margin:0 auto; }
+    .types-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+    .type-card {
+      padding:20px 16px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:16px;
+      display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+      transition:transform 0.2s,border-color 0.2s,background 0.2s;
+      cursor:default;
+    }
+    .type-card:hover { transform:translateY(-5px); border-color:var(--tc); background:rgba(255,255,255,0.07); }
+    .type-icon { font-size:28px; filter:drop-shadow(0 0 8px var(--tc,#fff)); }
+    .type-name { font-family:'Cinzel',serif; font-size:13px; color:var(--tc,var(--text)); letter-spacing:0.5px; }
+    .type-desc { font-size:11px; color:var(--text-muted); line-height:1.5; }
+
+    /* ── FEATURES ── */
+    #features { padding:100px 60px; background:linear-gradient(180deg,transparent,rgba(42,21,69,0.15),transparent); }
+    .features-inner { max-width:1200px; margin:0 auto; }
+    .features-header { text-align:center; margin-bottom:70px; }
+    .features-header .section-desc { margin:0 auto; }
+    .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .feature-card { background:linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)); border:1px solid var(--border); border-radius:20px; padding:38px 30px; transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s; cursor:default; }
+    .feature-card:hover { transform:translateY(-8px); border-color:rgba(232,160,48,0.5); box-shadow:0 20px 60px rgba(0,0,0,0.4),0 0 40px rgba(232,160,48,0.1); }
+    /* .feature-icon handled in geometric section below */
+    .feature-title { font-family:'Cinzel',serif; font-size:17px; font-weight:600; color:var(--bright-gold); margin-bottom:10px; }
+    .feature-desc { font-size:14px; color:var(--text-muted); line-height:1.75; }
+    .feature-tag { display:inline-block; margin-top:18px; font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--amber-soft); border:1px solid rgba(255,154,80,0.3); padding:3px 12px; border-radius:20px; }
+
+    /* ── GAME MODES ── */
+    #modes { padding:100px 60px; }
+    .modes-inner { max-width:1200px; margin:0 auto; }
+    .modes-header { text-align:center; margin-bottom:70px; }
+    .modes-header .section-desc { margin:0 auto; }
+    .mode-row { display:grid; gap:22px; margin-bottom:22px; }
+    .mode-row-1 { grid-template-columns:1fr; }
+    .mode-row-2 { grid-template-columns:1fr 1fr; }
+    .mode-card { position:relative; border-radius:22px; border:1px solid var(--border); overflow:hidden; transition:transform 0.3s,box-shadow 0.3s; cursor:default; }
+    .mode-card:hover { transform:translateY(-6px); box-shadow:0 24px 70px rgba(0,0,0,0.5); }
+    .mode-inner { padding:48px 48px; display:grid; align-items:center; gap:36px; position:relative; z-index:1; }
+    .mode-inner-wide { grid-template-columns:1fr auto; }
+    .mode-inner-wide-rev { grid-template-columns:auto 1fr; }
+    .mode-inner-single { grid-template-columns:1fr; }
+    .mode-space   { background:linear-gradient(135deg,rgba(8,16,50,0.97),rgba(22,8,52,0.85)); }
+    .mode-rogue   { background:linear-gradient(135deg,rgba(46,10,10,0.97),rgba(88,18,8,0.75)); }
+    .mode-bosses  { background:linear-gradient(135deg,rgba(18,8,46,0.97),rgba(54,8,70,0.75)); }
+    .mode-base    { background:linear-gradient(135deg,rgba(8,28,18,0.97),rgba(14,50,30,0.75)); }
+    .mode-bg-glow { position:absolute; border-radius:50%; filter:blur(70px); pointer-events:none; z-index:0; }
+    .mode-eyebrow { font-family:'Cinzel',serif; font-size:10px; letter-spacing:4px; text-transform:uppercase; margin-bottom:10px; }
+    .mode-title { font-family:'Cinzel Decorative',cursive; font-size:clamp(20px,2.8vw,28px); font-weight:700; margin-bottom:12px; color:var(--text); }
+    .mode-desc { font-size:15px; color:var(--text-muted); line-height:1.8; max-width:500px; }
+    .mode-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:18px; }
+    .mode-pill { font-family:'Cinzel',serif; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:20px; border:1px solid; background:rgba(255,255,255,0.05); }
+    .mode-giant-icon { font-size:clamp(68px,8vw,100px); line-height:1; opacity:0.85; user-select:none; }
+
+    /* ── REVIEWS ── */
+    #reviews { padding:100px 60px; background:linear-gradient(180deg,transparent,rgba(42,21,69,0.2)); }
+    .reviews-inner { max-width:1100px; margin:0 auto; }
+    .reviews-header { text-align:center; margin-bottom:56px; }
+    .reviews-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .review-card { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:20px; padding:30px; }
+    .review-stars { display:flex; align-items:center; margin-bottom:14px; }
+    .review-text { font-size:14px; line-height:1.8; color:var(--text); margin-bottom:18px; font-style:italic; }
+    .review-user { font-family:'Cinzel',serif; font-size:12px; letter-spacing:1px; color:var(--warm-gold); }
+
+
+    /* ── FOOTER ── */
+    footer { position:relative; z-index:10; border-top:1px solid var(--border); padding:44px 60px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+    .footer-logo { font-family:'Cinzel Decorative',cursive; font-size:18px; color:var(--bright-gold); text-shadow:0 0 20px rgba(245,200,66,0.4); display:flex; align-items:center; gap:10px; }
+    .footer-logo img { width:28px; height:28px; border-radius:7px; }
+    .footer-links { display:flex; gap:26px; list-style:none; }
+    .footer-links a { font-family:'Cinzel',serif; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color 0.2s; }
+    .footer-links a:hover { color:var(--warm-gold); }
+    .footer-copy { font-size:12px; color:var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:960px) {
+      nav { padding:16px 20px; }
+      .nav-links { display:none; }
+      .hero { padding:100px 24px 60px; }
+      .hero-eyebrow::before,.hero-eyebrow::after { display:none; }
+      .hero-buttons { justify-content:center; }
+      #creatures,#types,#features,#modes,#reviews { padding:70px 24px; }
+      .sprite-showcase { grid-template-columns:1fr; }
+      .types-grid { grid-template-columns:repeat(3,1fr); }
+      .features-grid { grid-template-columns:1fr; }
+      .mode-row-2 { grid-template-columns:1fr; }
+      .mode-inner-wide,.mode-inner-wide-rev { grid-template-columns:1fr; }
+      .mode-giant-icon { display:none; }
+      .mode-inner { padding:32px 26px; }
+      .reviews-grid { grid-template-columns:1fr; }
+      .stats-bar { padding:24px 16px; }
+      .stat-item { padding:10px 18px; border-right:none; border-bottom:1px solid var(--border); width:50%; }
+      .stat-item:nth-child(odd) { border-right:1px solid var(--border); }
+      footer { padding:36px 20px; flex-direction:column; align-items:center; text-align:center; }
+    }
+
+    /* ── FEATURE ICONS (CSS geometric shapes) ── */
+    .feature-icon {
+      width:56px; height:56px;
+      position:relative;
+      margin-bottom:22px;
+    }
+    /* Ring pair (genetics) */
+    .fi-ring {
+      position:absolute;
+      width:38px; height:38px;
+      border-radius:50%;
+      border:3px solid var(--ic);
+      box-shadow:0 0 14px var(--ic), inset 0 0 8px rgba(255,255,255,0.05);
+      top:4px; left:4px;
+      animation:fiPulse 3s ease-in-out infinite;
+    }
+    .fi-ring2 {
+      width:26px; height:26px;
+      border-color:var(--ic2);
+      box-shadow:0 0 10px var(--ic2);
+      top:15px; left:15px;
+      animation-delay:0.5s;
+    }
+    @keyframes fiPulse {
+      0%,100%{opacity:0.8;transform:scale(1)} 50%{opacity:1;transform:scale(1.06)}
+    }
+    /* Diamond (alchemy) */
+    .fi-diamond {
+      position:absolute;
+      width:32px; height:32px;
+      background:linear-gradient(135deg, var(--ic), var(--ic2));
+      box-shadow:0 0 20px var(--ic), 0 0 40px rgba(251,146,60,0.3);
+      transform:rotate(45deg);
+      top:12px; left:12px;
+      animation:fiPulse 2.5s ease-in-out infinite;
+    }
+    /* 4-pointed star (constellations) */
+    .fi-star4 {
+      position:absolute;
+      width:40px; height:40px;
+      top:8px; left:8px;
+    }
+    .fi-star4::before, .fi-star4::after {
+      content:'';
+      position:absolute;
+      background:linear-gradient(135deg, var(--ic), var(--ic2));
+      box-shadow:0 0 16px var(--ic), 0 0 32px rgba(56,189,248,0.4);
+      border-radius:2px;
+      inset:0;
+      animation:fiStar 3s ease-in-out infinite;
+    }
+    .fi-star4::before { clip-path:polygon(50% 0%,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0% 50%,40% 40%); }
+    .fi-star4::after  { clip-path:polygon(50% 0%,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0% 50%,40% 40%); transform:rotate(45deg); opacity:0.5; }
+    @keyframes fiStar { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(15deg)} }
+    /* Fusion circles (cultivation) */
+    .fi-fuse {
+      position:absolute;
+      width:34px; height:34px;
+      border-radius:50%;
+      background:radial-gradient(circle, var(--ic) 0%, transparent 70%);
+      box-shadow:0 0 16px var(--ic);
+      top:4px; left:2px;
+      opacity:0.85;
+      animation:fiFuse 2.8s ease-in-out infinite;
+    }
+    .fi-fuse2 {
+      background:radial-gradient(circle, var(--ic2) 0%, transparent 70%);
+      box-shadow:0 0 16px var(--ic2);
+      top:18px; left:18px;
+      animation-delay:0.6s;
+    }
+    @keyframes fiFuse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+    /* Hexagon (biome) */
+    .fi-hex {
+      position:absolute;
+      width:38px; height:38px;
+      top:9px; left:9px;
+      background:linear-gradient(135deg, var(--ic), var(--ic2));
+      clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+      box-shadow:0 0 20px var(--ic);
+      animation:fiPulse 3.2s ease-in-out infinite;
+    }
+    /* Triangle (market) */
+    .fi-tri {
+      position:absolute;
+      width:0; height:0;
+      border-left:22px solid transparent;
+      border-right:22px solid transparent;
+      border-bottom:38px solid var(--ic);
+      top:9px; left:6px;
+      filter:drop-shadow(0 0 12px var(--ic)) drop-shadow(0 0 24px var(--ic2));
+      animation:fiPulse 2.8s ease-in-out infinite;
+    }
+
+    /* ── MODE GIANT GLYPHS ── */
+    .mode-giant-icon { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .mgi-glyph {
+      font-size:clamp(80px,10vw,120px);
+      line-height:1;
+      color:var(--mg);
+      text-shadow:0 0 30px var(--mg), 0 0 60px color-mix(in srgb, var(--mg) 40%, transparent);
+      animation:mgiPulse 4s ease-in-out infinite;
+      font-family:'Cinzel',serif;
+    }
+    @keyframes mgiPulse {
+      0%,100%{text-shadow:0 0 20px var(--mg),0 0 50px color-mix(in srgb,var(--mg) 30%,transparent)}
+      50%{text-shadow:0 0 40px var(--mg),0 0 80px color-mix(in srgb,var(--mg) 60%,transparent),0 0 120px color-mix(in srgb,var(--mg) 20%,transparent)}
+    }
+
+    /* ── TYPE ORB ── */
+    .type-orb {
+      width:32px; height:32px;
+      border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, color-mix(in srgb,var(--to) 80%,white), var(--to) 60%, transparent);
+      box-shadow:0 0 12px var(--to), 0 0 24px color-mix(in srgb,var(--to) 40%,transparent);
+      animation:orbPulse 3s ease-in-out infinite;
+      flex-shrink:0;
+    }
+    .type-card { gap:10px; }
+    .type-icon { display:none; } /* hide old icon class if any remain */
+    @keyframes orbPulse {
+      0%,100%{box-shadow:0 0 8px var(--to),0 0 18px color-mix(in srgb,var(--to) 30%,transparent)}
+      50%{box-shadow:0 0 16px var(--to),0 0 32px color-mix(in srgb,var(--to) 50%,transparent)}
+    }
+
+    /* ── REVIEW STARS (CSS diamonds) ── */
+    .rstar {
+      display:inline-block;
+      width:10px; height:10px;
+      background:var(--bright-gold);
+      clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+      box-shadow:0 0 6px rgba(245,200,66,0.8);
+      margin-right:3px;
+    }
+
+    /* ── SECTION LABEL: replace prefix with left bar ── */
+    .section-label {
+      display:flex; align-items:center; gap:10px;
+    }
+    .section-label::before {
+      content:'';
+      display:inline-block;
+      width:24px; height:2px;
+      background:linear-gradient(to right, var(--warm-gold), transparent);
+      border-radius:2px;
+      box-shadow:0 0 6px rgba(232,160,48,0.6);
+    }
+    .section-label::after {
+      content:'';
+      display:inline-block;
+      width:24px; height:2px;
+      background:linear-gradient(to left, var(--warm-gold), transparent);
+      border-radius:2px;
+      box-shadow:0 0 6px rgba(232,160,48,0.6);
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="starfield" id="starfield"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#">
+    <img src="appicon.png" alt="Alchemons" />
+    Alchemons
+  </a>
+  <ul class="nav-links">
+    <li><a href="#creatures">Creatures</a></li>
+    <li><a href="#types">Elements</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#modes">Game Modes</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-horizon"></div>
+  <div class="orb" style="width:80px;height:80px;background:radial-gradient(circle,#ff6030bb,#ff600030);top:20%;left:5%;--dur:9s;--dx:22px;--dy:-16px;"></div>
+  <div class="orb" style="width:50px;height:50px;background:radial-gradient(circle,#4ecb71bb,#4ecb7130);bottom:28%;left:8%;--dur:11s;--delay:2s;--dx:14px;--dy:-22px;"></div>
+  <div class="orb" style="width:45px;height:45px;background:radial-gradient(circle,#c070ffbb,#c070ff30);top:12%;right:6%;--dur:8s;--delay:0.5s;--dx:-28px;--dy:18px;"></div>
+
+  <div class="hero-left">
+    <p class="hero-eyebrow">A New World of Elemental Creatures</p>
+    <h1 class="hero-title">Alchemons</h1>
+    <p class="hero-tagline">Breed · Explore · Discover</p>
+    <p class="hero-desc">
+      Over 100 Alchemons born from elemental alchemy. Cultivate rare variants, 
+      master constellation skill trees, chart open space, and forge an unbeatable squad —
+      then put it to the test in roguelike survival and legendary boss battles.
+    </p>
+    <div class="hero-buttons">
+      <a href="#" class="btn-primary">Download on iOS</a>
+      <a href="#" class="btn-primary" style="background:linear-gradient(135deg,#3a7bd5,#2255aa);box-shadow:0 0 40px rgba(58,123,213,0.5),0 4px 20px rgba(0,0,0,0.4);">Get it on Android</a>
+      <a href="#creatures" class="btn-secondary">Meet the Alchemons</a>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-number">100+</span><span class="stat-label">Unique Alchemons</span></div>
+  <div class="stat-item"><span class="stat-number">17</span><span class="stat-label">Elemental Types</span></div>
+  <div class="stat-item"><span class="stat-number">∞</span><span class="stat-label">Breeding Combos</span></div>
+  <div class="stat-item"><span class="stat-number">Offline</span><span class="stat-label">No WIFI Needed</span></div>
+</div>
+
+<!-- CREATURES SHOWCASE -->
+<section id="creatures">
+  <div class="creatures-inner">
+    <div class="creatures-header fade-in">
+      <p class="section-label">Meet the Alchemons</p>
+      <h2 class="section-title">Over 100 Unique Alchemons</h2>
+      <p class="section-desc">Every Alchemon is shaped by its species, element, nature, and the cultivation lineage of its parents. No two are ever truly the same.</p>
+    </div>
+
+    <div class="sprite-showcase">
+      <!-- Firelet -->
+      <div class="sprite-card fade-in" style="--card-glow:rgba(255,100,20,0.12);">
+        <div class="sprite sprite-firelet"></div>
+        <div class="sprite-name">Let</div>
+        <span class="sprite-type" style="color:#ff7a20;border-color:rgba(255,122,32,0.25);">Fire · Let</span>
+        <p class="sprite-flavor">A small ember spirit — quick to flare and perfect for early runs.</p>
+      </div>
+      <!-- Pip -->
+      <div class="sprite-card fade-in" style="--card-glow:rgba(255,255,255,0.06);">
+        <div class="sprite sprite-pip"></div>
+        <div class="sprite-name">Pip</div>
+        <span class="sprite-type" style="color:#fff;border-color:rgba(255,255,255,0.12);">Air · Pip</span>
+        <p class="sprite-flavor">A curious starter Alchemon — quick, bright, and eager to explore.</p>
+      </div>
+      <!-- Mane -->
+      <div class="sprite-card fade-in" style="transition-delay:0.08s;--card-glow:rgba(100,120,220,0.1);">
+        <div class="sprite sprite-mane"></div>
+        <div class="sprite-name">Mane</div>
+        <span class="sprite-type" style="color:#9090ff;border-color:rgba(144,144,255,0.35);">Dark · Mane</span>
+        <p class="sprite-flavor">Veiled in shadow and crowned with dark flame — a proud predator of the void.</p>
+      </div>
+      <!-- Horn -->
+      <div class="sprite-card fade-in" style="transition-delay:0.16s;--card-glow:rgba(200,160,200,0.08);">
+        <div class="sprite sprite-horn"></div>
+        <div class="sprite-name">Horn</div>
+        <span class="sprite-type" style="color:#c090ff;border-color:rgba(192,112,255,0.25);">Poison · Horn</span>
+        <p class="sprite-flavor">A stalwart guardian with a crystalline horn that refracts elemental power.</p>
+      </div>
+      <!-- Mask -->
+      <div class="sprite-card fade-in" style="transition-delay:0.24s;--card-glow:rgba(255,80,0,0.12);">
+        <div class="sprite sprite-mask"></div>
+        <div class="sprite-name">Mask</div>
+        <span class="sprite-type" style="color:#ff8040;border-color:rgba(255,128,64,0.35);">Lava · Mask</span>
+        <p class="sprite-flavor">Molten rock forged into something ancient — its eyes burn with primordial hunger.</p>
+      </div>
+      <!-- Wing -->
+      <div class="sprite-card fade-in" style="transition-delay:0.32s;--card-glow:rgba(100,200,255,0.08);">
+        <div class="sprite sprite-wing"></div>
+        <div class="sprite-name">Wing</div>
+        <span class="sprite-type" style="color:#80d0f0;border-color:rgba(128,208,240,0.25);">Air · Wing</span>
+        <p class="sprite-flavor">Swift as the breeze, it dances above the battlefield and teases foes from the sky.</p>
+      </div>
+      <!-- Kin -->
+      <div class="sprite-card fade-in" style="transition-delay:0.40s;--card-glow:rgba(210,170,60,0.1);">
+        <div class="sprite sprite-kin"></div>
+        <div class="sprite-name">Kin</div>
+        <span class="sprite-type" style="color:#d4a030;border-color:rgba(212,160,48,0.35);">Dust · Kin</span>
+        <p class="sprite-flavor">A wandering pack spirit, its golden form carries whispers of ancient ruins.</p>
+      </div>
+      <!-- Mystic (Leviathan) -->
+      <div class="sprite-card fade-in" style="transition-delay:0.48s;--card-glow:rgba(64,184,255,0.12);">
+        <div class="sprite sprite-leviathan"></div>
+        <div class="sprite-name">Leviathan</div>
+        <span class="sprite-type" style="color:#40b0ff;border-color:rgba(64,176,255,0.28);">Water · Mystic</span>
+        <p class="sprite-flavor">Elemental Guardians — a titanic spirit that commands the tides.</p>
+      </div>
+    </div>
+
+    <div class="creatures-cta fade-in">
+      <p>Hundreds more await discovery through exploration and cultivation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ELEMENTAL TYPES -->
+<section id="types">
+  <div class="types-header fade-in">
+    <p class="section-label">Elemental Types</p>
+    <h2 class="section-title">17 Forces of Nature</h2>
+    <p class="section-desc">Each element shapes a creature's abilities, breeding compatibility, and personality. Discover hidden traits, pigmentations and master the interactions between them to unlock the rarest Alchemons.</p>
+  </div>
+  <div class="types-grid">
+    <div class="type-card fade-in" style="--tc:#ff5020"><div class="type-orb" style="--to:#ff5020;"></div><span class="type-name">Fire</span><span class="type-desc">Born of flame; passionate and volatile.</span></div>
+    <div class="type-card fade-in" style="--tc:#40b0ff;transition-delay:0.03s"><div class="type-orb" style="--to:#40b0ff;"></div><span class="type-name">Water</span><span class="type-desc">Fluid and adaptive; calm or crushing.</span></div>
+    <div class="type-card fade-in" style="--tc:#a06030;transition-delay:0.06s"><div class="type-orb" style="--to:#a06030;"></div><span class="type-name">Earth</span><span class="type-desc">Sturdy and grounded; unyielding.</span></div>
+    <div class="type-card fade-in" style="--tc:#80d0f0;transition-delay:0.09s"><div class="type-orb" style="--to:#80d0f0;"></div><span class="type-name">Air</span><span class="type-desc">Swift and elusive; ever-moving.</span></div>
+    <div class="type-card fade-in" style="--tc:#c0d0e0;transition-delay:0.12s"><div class="type-orb" style="--to:#c0d0e0;"></div><span class="type-name">Steam</span><span class="type-desc">Vapor between fire and water; shifting.</span></div>
+    <div class="type-card fade-in" style="--tc:#e05020;transition-delay:0.15s"><div class="type-orb" style="--to:#e05020;"></div><span class="type-name">Lava</span><span class="type-desc">Molten rock; searing and heavy.</span></div>
+    <div class="type-card fade-in" style="--tc:#ffd700;transition-delay:0.18s"><div class="type-orb" style="--to:#ffd700;"></div><span class="type-name">Lightning</span><span class="type-desc">Charged and sudden; crackling power.</span></div>
+    <div class="type-card fade-in" style="--tc:#806040;transition-delay:0.21s"><div class="type-orb" style="--to:#806040;"></div><span class="type-name">Mud</span><span class="type-desc">Thick and stubborn; earth meets water.</span></div>
+    <div class="type-card fade-in" style="--tc:#a0d8f0;transition-delay:0.24s"><div class="type-orb" style="--to:#a0d8f0;"></div><span class="type-name">Ice</span><span class="type-desc">Cold precision; frozen beauty.</span></div>
+    <div class="type-card fade-in" style="--tc:#d4a030;transition-delay:0.27s"><div class="type-orb" style="--to:#d4a030;"></div><span class="type-name">Dust</span><span class="type-desc">Ancient grit; whisper of ruins.</span></div>
+    <div class="type-card fade-in" style="--tc:#c090ff;transition-delay:0.30s"><div class="type-orb" style="--to:#c090ff;"></div><span class="type-name">Crystal</span><span class="type-desc">Faceted and arcane; refractive.</span></div>
+    <div class="type-card fade-in" style="--tc:#40c060;transition-delay:0.33s"><div class="type-orb" style="--to:#40c060;"></div><span class="type-name">Plant</span><span class="type-desc">Living growth; verdant and resilient.</span></div>
+    <div class="type-card fade-in" style="--tc:#80c040;transition-delay:0.36s"><div class="type-orb" style="--to:#80c040;"></div><span class="type-name">Poison</span><span class="type-desc">Toxic and corrosive; silent threat.</span></div>
+    <div class="type-card fade-in" style="--tc:#e0a0ff;transition-delay:0.39s"><div class="type-orb" style="--to:#e0a0ff;"></div><span class="type-name">Spirit</span><span class="type-desc">Ethereal and liminal; otherworldly.</span></div>
+    <div class="type-card fade-in" style="--tc:#6060b0;transition-delay:0.42s"><div class="type-orb" style="--to:#6060b0;"></div><span class="type-name">Dark</span><span class="type-desc">Veiled and secret; devours light.</span></div>
+    <div class="type-card fade-in" style="--tc:#ffe080;transition-delay:0.45s"><div class="type-orb" style="--to:#ffe080;"></div><span class="type-name">Light</span><span class="type-desc">Radiant and pure; revealing.</span></div>
+    <div class="type-card fade-in" style="--tc:#d04060;transition-delay:0.48s"><div class="type-orb" style="--to:#d04060;"></div><span class="type-name">Blood</span><span class="type-desc">Vital and primal; life-bound myth.</span></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="features-inner">
+    <div class="features-header fade-in">
+      <p class="section-label">Core Systems</p>
+      <h2 class="section-title">Deep Mechanics. Endless Replayability.</h2>
+      <p class="section-desc">Every system feeds the next — what you explore shapes what you can breed, and what you breed shapes how you fight.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon" style="--ic:#a78bfa;--ic2:#7c3aed;"><div class="fi-ring"></div><div class="fi-ring fi-ring2"></div></div>
+        <div class="feature-title">Living Genetics</div>
+        <p class="feature-desc">Every creature carries a unique genetic signature inherited through breeding. Unlock prismatic, albino, and legendary variants that exist nowhere else in the cosmos.</p>
+        <span class="feature-tag">Inherited Traits</span>
+      </div>
+      <div class="feature-card fade-in" style="transition-delay:0.1s">
+        <div class="feature-icon" style="--ic:#fb923c;--ic2:#dc2626;"><div class="fi-diamond"></div></div>
+        <div class="feature-title">Elemental Alchemy</div>
+        <p class="feature-desc">17 elemental types, each with distinct ability archetypes and breeding affinities. Combine them deliberately to unlock the rarest hybrid Alchemons in existence.</p>
+        <span class="feature-tag">17 Elements</span>
+      </div>
+      <div class="feature-card fade-in" style="transition-delay:0.2s">
+        <div class="feature-icon" style="--ic:#38bdf8;--ic2:#0ea5e9;"><div class="fi-star4"></div></div>
+        <div class="feature-title">Constellation Skills</div>
+        <p class="feature-desc">Each Alchemon has a unique interactive star map — an evolving skill tree that permanently transforms their combat role, abilities, and elemental synergies.</p>
+        <span class="feature-tag">Skill Trees</span>
+      </div>
+      <div class="feature-card fade-in" style="transition-delay:0.3s">
+        <div class="feature-icon" style="--ic:#4ade80;--ic2:#16a34a;"><div class="fi-fuse"></div><div class="fi-fuse fi-fuse2"></div></div>
+        <div class="feature-title">Cultivation & Fusion</div>
+        <p class="feature-desc">Alchemons don't hatch — they're cultivated. Combine two creatures through an alchemical ritual and watch a cinematic fusion reveal your new creation, shaped entirely by your choices.</p>
+        <span class="feature-tag">Cinematic Events</span>
+      </div>
+      <!-- build home planet base in the cosmos and customize it -->
+       <div class="feature-card fade-in" style="transition-delay:0.4s">
+        <div class="feature-icon" style="--ic:#fcd34d;--ic2:#fbbf24;"><div class="fi-hex"></div></div>
+        <div class="feature-title">Home Planet Base</div>
+        <p class="feature-desc">Construct and customize your own base on a distant planet. Decorate it with rare resources, trophies from legendary battles, and habitats for your Alchemons to relax in between adventures.</p>
+        <span class="feature-tag">Base Building</span>
+    </div>
+  </div>
+</section>
+
+<!-- GAME MODES -->
+<section id="modes">
+  <div class="modes-inner">
+    <div class="modes-header fade-in">
+      <p class="section-label">Game Modes</p>
+      <h2 class="section-title">One Collection. Endless Discoveries.</h2>
+      <p class="section-desc">Your Alchemons aren't just a collection — they're your explorers, defenders, and weapons across four distinct gameplay experiences.</p>
+    </div>
+
+    <div class="mode-row mode-row-1 fade-in">
+      <div class="mode-card mode-space">
+        <div class="mode-bg-glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(64,184,255,0.12),transparent 70%);top:-150px;right:-150px;"></div>
+        <div class="mode-inner mode-inner-wide">
+          <div class="mode-content">
+            <p class="mode-eyebrow" style="color:#40b8ff;">Open World</p>
+            <h3 class="mode-title">Space Exploration</h3>
+            <p class="mode-desc">Chart an open cosmic wilderness teeming with wild Alchemons, rare elemental nodes, and uncharted regions. Every expedition surfaces new breeding candidates and ancient ruins — the cosmos rewards those who wander.</p>
+            <div class="mode-pills">
+              <span class="mode-pill" style="color:#40b8ff;border-color:rgba(64,184,255,0.3);">Open World Map</span>
+              <span class="mode-pill" style="color:#40b8ff;border-color:rgba(64,184,255,0.3);">Wild Encounters</span>
+              <span class="mode-pill" style="color:#40b8ff;border-color:rgba(64,184,255,0.3);">Elemental Nodes</span>
+              <span class="mode-pill" style="color:#40b8ff;border-color:rgba(64,184,255,0.3);">Capture & Recruit</span>
+            </div>
+          </div>
+          <div class="mode-giant-icon"><div class="mgi-glyph" style="--mg:#40b8ff;--mg2:#0ea5e9;">&#x2736;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-row mode-row-2 fade-in">
+      <div class="mode-card mode-rogue">
+        <div class="mode-bg-glow" style="width:340px;height:340px;background:radial-gradient(circle,rgba(255,96,48,0.13),transparent 70%);top:-80px;right:-60px;"></div>
+        <div class="mode-inner mode-inner-single">
+          <div class="mode-content">
+            <p class="mode-eyebrow" style="color:#ff9a50;">Roguelike Tower Defense</p>
+            <h3 class="mode-title">Cosmic Survival</h3>
+            <p class="mode-desc">Hold the line against escalating horde waves. Each run is a new configuration — random enemy compositions, shifting elemental resistances, permanent stakes. Place your defenders, adapt, and survive.</p>
+            <div class="mode-pills">
+              <span class="mode-pill" style="color:#ff9a50;border-color:rgba(255,154,80,0.3);">Horde Waves</span>
+              <span class="mode-pill" style="color:#ff9a50;border-color:rgba(255,154,80,0.3);">Tower Defense</span>
+              <span class="mode-pill" style="color:#ff9a50;border-color:rgba(255,154,80,0.3);">Roguelike Runs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mode-card mode-bosses">
+        <div class="mode-bg-glow" style="width:340px;height:340px;background:radial-gradient(circle,rgba(192,112,255,0.13),transparent 70%);top:-80px;right:-60px;"></div>
+        <div class="mode-inner mode-inner-single">
+          <div class="mode-content">
+            <p class="mode-eyebrow" style="color:#c070ff;">Boss Encounters</p>
+            <h3 class="mode-title">Legendary Bosses</h3>
+            <p class="mode-desc">Juggernauts that absorb punishment. Summoners that flood the field. Artillery that bombards from range. Hydras that split and regenerate. Every boss demands a different counter-strategy.</p>
+            <div class="mode-pills">
+              <span class="mode-pill" style="color:#c070ff;border-color:rgba(192,112,255,0.3);">Juggernaut</span>
+              <span class="mode-pill" style="color:#c070ff;border-color:rgba(192,112,255,0.3);">Summoner</span>
+              <span class="mode-pill" style="color:#c070ff;border-color:rgba(192,112,255,0.3);">Artillery</span>
+              <span class="mode-pill" style="color:#c070ff;border-color:rgba(192,112,255,0.3);">Hydra</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-row mode-row-1 fade-in">
+      <div class="mode-card mode-base">
+        <div class="mode-bg-glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(78,203,113,0.1),transparent 70%);bottom:-150px;left:-100px;"></div>
+        <div class="mode-inner mode-inner-wide-rev">
+          <div class="mode-giant-icon"><div class="mgi-glyph" style="--mg:#4ecb71;--mg2:#16a34a;">&#x2756;</div></div>
+          <div class="mode-content">
+            <p class="mode-eyebrow" style="color:#4ecb71;">Strategic Base Building</p>
+            <h3 class="mode-title">Custom Base Upgrades</h3>
+            <p class="mode-desc">Reinforce your alchemical stronghold between expeditions. Upgrade breeding chambers, expand biome outposts, unlock research labs that reveal new element fusions, and fortify defenses. Your base is a long-term competitive edge — not decoration.</p>
+            <div class="mode-pills">
+              <span class="mode-pill" style="color:#4ecb71;border-color:rgba(78,203,113,0.3);">Breeding Chambers</span>
+              <span class="mode-pill" style="color:#4ecb71;border-color:rgba(78,203,113,0.3);">Harvest Outposts</span>
+              <span class="mode-pill" style="color:#4ecb71;border-color:rgba(78,203,113,0.3);">Research Labs</span>
+              <span class="mode-pill" style="color:#4ecb71;border-color:rgba(78,203,113,0.3);">Defense Fortifications</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="reviews-inner">
+    <div class="reviews-header fade-in">
+      <p class="section-label">From the Community</p>
+      <h2 class="section-title">Players Are Hooked</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card fade-in">
+        <div class="review-stars"><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span></div>
+        <p class="review-text">"The space exploration loop feeds directly into breeding which feeds into survival runs. I haven't put it down in days."</p>
+        <div class="review-user">— dragonkeeper99</div>
+      </div>
+      <div class="review-card fade-in" style="transition-delay:0.1s">
+        <div class="review-stars"><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span></div>
+        <p class="review-text">"Bred a Dark/Spirit build specifically to counter the Hydra. When it worked perfectly I felt like a genius. This game rewards real planning."</p>
+        <div class="review-user">— alch_miranda</div>
+      </div>
+      <div class="review-card fade-in" style="transition-delay:0.2s">
+        <div class="review-stars"><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span><span class="rstar"></span></div>
+        <p class="review-text">"The base upgrade system means there's always a long-term goal even when I only have 10 minutes. Brilliant progression design."</p>
+        <div class="review-user">— pocketmonger</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="appicon.png" alt="Alchemons icon" />
+    Alchemons
+  </div>
+  <ul class="footer-links">
+    <li><a href="#creatures">Creatures</a></li>
+    <li><a href="#types">Elements</a></li>
+    <li><a href="#modes">Game Modes</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Alchemons. All rights reserved.</div>
+</footer>
+
+<script>
+  // Starfield
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 150; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = 0.4 + Math.random() * 2.2;
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--dur:${4+Math.random()*9}s;--delay:-${Math.random()*9}s;--max-op:${0.15+Math.random()*0.65};`;
+    sf.appendChild(s);
+  }
+
+  // Nav scroll
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+</script>
+</body>
+</html>
