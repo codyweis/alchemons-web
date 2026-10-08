@@ -140,13 +140,15 @@
     let shift = null;
     const cache = new Map();
     const img = (k) => { if (!cache.has(k)) cache.set(k, G.loadImage(`/assets/biomes/${k}.webp`)); return cache.get(k); };
-    let currentK = 'valley';
+    let currentK = 'valley', wantK = currentK;
 
     async function showBiome(k) {
-      if (k === currentK) return;
+      if (k === wantK) return;
+      wantK = k;
       const [, name, line] = BIOMES.find((b) => b[0] === k);
       buttons.forEach((b) => b.setAttribute('aria-pressed', b.dataset.k === k));
       const [from, to] = await Promise.all([img(currentK), img(k)]);
+      if (k !== wantK) return; // a later click won the race
       currentK = k;
       document.getElementById('biome-name').textContent = name;
       document.getElementById('biome-line').textContent = line;
