@@ -3,8 +3,33 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "firestore.waitlist.rules",
+      "trailer_left.mp4",
+      "trailer_right.mp4",
+      ".claude/**",
+      "**/.claude/**",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600"
+          }
+        ]
+      }
     ]
   }
 }

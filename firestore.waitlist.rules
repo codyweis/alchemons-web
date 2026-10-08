@@ -1,0 +1,21 @@
+// Waitlist rules for the website signup form (js/waitlist.js).
+// The game's Firestore lives in the `alchemons-auth` project, whose rules are
+// deployed from the game repo (~/Documents/repos/Alchemons/firestore.rules).
+// Paste this block inside `match /databases/{database}/documents { ... }` there,
+// then deploy: firebase deploy --only firestore:rules --project prod
+//
+// Anyone may add or update their own entry; nobody can read, list or delete
+// entries from a client. Export signups from the Firebase console or Admin SDK.
+
+    match /waitlist/{entryId} {
+      allow read, delete: if false;
+      allow create, update: if entryId.matches('^[a-f0-9]{64}$') &&
+          request.resource.data.keys().hasOnly(['email', 'platform', 'source', 'createdAt']) &&
+          request.resource.data.email is string &&
+          request.resource.data.email.size() <= 254 &&
+          request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$') &&
+          request.resource.data.platform in ['ios', 'android', 'both'] &&
+          request.resource.data.source == 'site' &&
+          request.resource.data.createdAt == request.time &&
+          (resource == null || resource.data.email == request.resource.data.email);
+    }
