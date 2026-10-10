@@ -23,7 +23,7 @@
   <link rel="preload" as="image" href="/assets/biomes/valley.webp">
 </head>
 <body>
-  <a class="skip" href="#alchemy">Skip the intro</a>
+  <a class="skip" href="#fusion">Skip the intro</a>
 
   <header class="nav" id="nav">
     <a class="nav-brand" href="/" aria-label="Alchemons home">
@@ -31,10 +31,10 @@
       <span>Alchemons</span>
     </a>
     <nav class="nav-links" aria-label="Sections">
-      <a href="#alchemy">Alchemy</a>
-      <a href="#lets">Alchemons</a>
+      <a href="#fusion">Fusion</a>
       <a href="#biomes">Biomes</a>
       <a href="#trailer">Trailer</a>
+      <a href="#play">Modes</a>
     </nav>
     <a class="btn btn-gold btn-sm" href="#waitlist">Join the waitlist</a>
   </header>
@@ -44,8 +44,8 @@
     <section class="valley" id="valley" aria-label="Introduction">
       <div class="valley-stage">
         <img class="valley-still" id="valley-still" src="/assets/biomes/valley.webp" alt="" width="1920" height="1056">
+        <canvas class="valley-scene" id="valley-scene" aria-hidden="true"></canvas>
         <canvas class="valley-canvas" id="valley-canvas" aria-hidden="true"></canvas>
-        <canvas class="valley-motes" id="valley-motes" aria-hidden="true"></canvas>
         <div class="valley-creatures" id="valley-creatures" aria-hidden="true"></div>
         <div class="valley-shade" aria-hidden="true"></div>
 
@@ -71,44 +71,24 @@
       </div>
     </section>
 
-    <!-- ───────── FUSION CODEX ───────── -->
-    <section class="section alchemy" id="alchemy">
+    <!-- ───────── FUSION: the Lets, and what two of them make ───────── -->
+    <section class="section fusion" id="fusion">
       <div class="wrap">
         <header class="section-head">
           <p class="eyebrow">Fusion</p>
-          <h2>Breed new Alchemons by fusing elements</h2>
-          <p class="lede">Every Alchemon belongs to one of seventeen elements. Fuse two and you get a new Alchemon, usually of a third element, with odds set by the pairing. Pick two elements below to see a recipe from the game.</p>
+          <h2>Fuse two Alchemons to make a new one</h2>
+          <p class="lede">There are eight families of Alchemons, each with a form in all seventeen elements. The Lets are the first family you meet. Fuse two and you usually get a Let of a third element, with odds set by the pair. Pick two below to try a recipe from the game.</p>
         </header>
 
-        <div class="codex-stage bracketed">
-          <canvas id="fusion-stage" aria-hidden="true"></canvas>
-          <p class="formula" id="formula" aria-live="polite"><span class="formula-hint">Pick an element</span></p>
+        <div class="fuse-stage bracketed" id="fuse-stage">
+          <canvas id="fuse-canvas" aria-hidden="true"></canvas>
+          <p class="fuse-label" id="fuse-a"></p>
+          <p class="fuse-label" id="fuse-b"></p>
+          <p class="formula" id="formula" aria-live="polite"><span class="formula-hint">Pick a Let</span></p>
         </div>
+        <p class="fuse-desc" id="fuse-desc" aria-live="polite"></p>
 
-        <div class="factions" id="factions"></div>
-      </div>
-    </section>
-
-    <!-- ───────── LETS ───────── -->
-    <section class="section lets" id="lets">
-      <div class="wrap">
-        <header class="section-head">
-          <p class="eyebrow">The Lets</p>
-          <h2>Seventeen Lets, one for each element</h2>
-          <p class="lede">There are eight families of Alchemons, and each family has a form in every element. The Lets are the first family you meet. Every Alchemon you extract inherits its nature, potential, size and tint from its parents.</p>
-        </header>
-
-        <div class="let-viewer">
-          <article class="let-feature bracketed" id="let-feature" aria-live="polite">
-            <canvas class="let-canvas" id="let-canvas" aria-hidden="true"></canvas>
-            <div class="let-copy">
-              <p class="let-meta" id="let-meta"></p>
-              <h3 id="let-name"></h3>
-              <p class="let-desc" id="let-desc"></p>
-            </div>
-          </article>
-          <ul class="let-grid" id="let-grid" aria-label="Lets"></ul>
-        </div>
+        <ul class="let-grid" id="let-grid" aria-label="Lets"></ul>
 
         <ul class="genes">
           <li><strong>27</strong><span>natures that change how an Alchemon harvests, breeds and fights</span></li>
@@ -277,8 +257,9 @@
   </footer>
 
   <script src="/js/grains.js" defer></script>
+  <script src="/js/valley-scene.js" defer></script>
   <script src="/js/valley.js" defer></script>
-  <script src="/js/alchemy.js" defer></script>
+  <script src="/js/fusion.js" defer></script>
   <script src="/js/site.js" defer></script>
   <script type="module" src="/js/waitlist.js"></script>
 </body>

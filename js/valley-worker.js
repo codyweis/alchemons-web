@@ -1,12 +1,14 @@
 /* The Valley's dissolve, off the main thread. valley.js hands over the canvas
-   and the still; this builds the grains once and draws whatever scroll
-   progress it is sent last, so the page never waits on it. */
+   and a snapshot of the scene; this builds the grains once and draws whatever
+   scroll progress it is sent last, so the page never waits on it. With `live`,
+   the ground nothing has left yet stays clear, so the living scene underneath
+   shows through until its grains go. */
 const h = (i, salt) => { const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453; return x - Math.floor(x); };
-const pack = (r, g, b) => (255 << 24) | (b << 16) | (g << 8) | r;
+const pack = (r, g, b, a = 255) => (a << 24) | (b << 16) | (g << 8) | r;
 const GOLD = [247, 226, 170];
 const MAX_GRAINS = 420000;
 
-let canvas, ctx, bitmap, FX, FY, RIFT, LIFE, reduce;
+let canvas, ctx, bitmap, FX, FY, RIFT, LIFE, reduce, live;
 let W = 0, H = 0, data, out, base, space, cur;
 let N = 0, gx, gy, gcol, gt, gvx, gvy, gseed;
 let shown = 0;                  // grains whose ground currently shows the dark (in cur)
@@ -16,10 +18,12 @@ const raf = self.requestAnimationFrame ? (cb) => self.requestAnimationFrame(cb) 
 
 onmessage = ({ data: m }) => {
   if (m.type === 'init') {
-    ({ canvas, bitmap, FX, FY, RIFT, LIFE, reduce } = m);
-    ctx = canvas.getContext('2d', { alpha: false });
+    ({ canvas, bitmap, FX, FY, RIFT, LIFE, reduce, live } = m);
+    ctx = canvas.getContext('2d', { alpha: !!live });
     build(m.vw, m.vh);
   } else if (m.type === 'resize') {
+    if (m.bitmap) { bitmap.close?.(); bitmap = m.bitmap; }
+    if (m.RIFT) RIFT = m.RIFT;
     build(m.vw, m.vh);
   } else if (m.type === 'p') {
     wantP = m.p;
@@ -47,7 +51,8 @@ function build(vw, vh) {
   const tmp = new OffscreenCanvas(W, H).getContext('2d', { willReadFrequently: true });
   const s = Math.max(W / IW, H / IH), dw = IW * s, dh = IH * s;
   tmp.drawImage(bitmap, (W - dw) * FX, (H - dh) * FY, dw, dh);
-  base = new Uint32Array(tmp.getImageData(0, 0, W, H).data.buffer);
+  const snap = new Uint32Array(tmp.getImageData(0, 0, W, H).data.buffer);
+  base = live ? new Uint32Array(W * H) : snap; // live: clear until a grain leaves
   cur = base.slice();
   shown = 0;
 
@@ -92,7 +97,7 @@ function build(vw, vh) {
     // outward from the rift, lifting, with a turn about it
     const ax = x - rx, ay = y - ry, len = Math.hypot(ax, ay) || 1;
     const out_ = 0.35 + r1 * 0.4, lift = 0.45 + r2 * 0.6, turn = 0.35;
-    gx[k] = x; gy[k] = y; gcol[k] = base[i]; gt[k] = t[i]; gseed[k] = r1 * 6.283;
+    gx[k] = x; gy[k] = y; gcol[k] = snap[i]; gt[k] = t[i]; gseed[k] = r1 * 6.283;
     gvx[k] = ((ax / len) * out_ + (-ay / len) * turn + (r2 - 0.5) * 0.4) * travel;
     gvy[k] = ((ay / len) * out_ * 0.6 + (ax / len) * turn - lift) * travel;
   }
@@ -110,8 +115,10 @@ function lowerBound(v) {
 }
 
 function blend(idx, r, g, b, a) {
-  const c = out[idx], cr = c & 255, cg = (c >>> 8) & 255, cb = (c >>> 16) & 255;
-  out[idx] = pack(cr + (r - cr) * a | 0, cg + (g - cg) * a | 0, cb + (b - cb) * a | 0);
+  const c = out[idx], ca = c >>> 24;
+  if (!ca) { out[idx] = pack(r | 0, g | 0, b | 0, a * 255 | 0); return; } // over clear ground: the grain alone
+  const cr = c & 255, cg = (c >>> 8) & 255, cb = (c >>> 16) & 255;
+  out[idx] = pack(cr + (r - cr) * a | 0, cg + (g - cg) * a | 0, cb + (b - cb) * a | 0, ca + (255 - ca) * a | 0);
 }
 
 function draw(p) {

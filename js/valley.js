@@ -1,9 +1,10 @@
-/* The Valley — the game's own Valley field, held still. Scroll and it comes
-   apart in grains, starting at the rift in its sky, until only the dark the
-   game's home sits in is left. Everything is a function of scroll progress, so
-   scrolling back up puts the mask back together. The grains themselves are
-   built and drawn in valley-worker.js, off the main thread. Also: the logo in
-   gold grains, motes over the grass, and Lets standing in it. */
+/* The Valley — the game's own Valley field, alive (valley-scene.js draws it as
+   the game does, by the visitor's clock). Scroll and it comes apart in grains,
+   starting at the rift in its sky, until only the dark the game's home sits in
+   is left. Everything is a function of scroll progress, so scrolling back up
+   puts the mask back together. The grains are built and drawn in
+   valley-worker.js, off the main thread. Also: the logo in gold grains, and
+   Lets standing in the grass. */
 (() => {
   const G = window.Grains;
   const section = document.getElementById('valley');
@@ -12,14 +13,14 @@
   const stage = section.querySelector('.valley-stage');
   const still = document.getElementById('valley-still');
   const canvas = document.getElementById('valley-canvas');
-  const motesCanvas = document.getElementById('valley-motes');
+  const sceneCanvas = document.getElementById('valley-scene');
   const hero = document.getElementById('hero');
   const lines = [...section.querySelectorAll('.line')];
   const creatureLayer = document.getElementById('valley-creatures');
   const reduce = G.reduceMotion;
 
   const FX = 0.5, FY = 0.62;            // object-position of the still
-  const RIFT = [0.579, 0.21];           // the black hole in the Valley's clouds, as a fraction of the art
+  let RIFT = [0.579, 0.21];             // the black hole in the Valley's clouds, as a fraction of the art (the scene says where, once it's up)
   const LIFE = 0.26;                    // progress a grain spends in flight
   const GRASS = 0.93;                   // where their feet meet the meadow, as a fraction of the art's height
 
@@ -49,25 +50,43 @@
     const s = Math.max(vw / IW, vh / IH), dh = IH * s, dy = (vh - dh) * FY;
     const cap = vw * (vw < 600 ? 0.17 : 0.11);
     LETS.forEach((c, i) => {
-      const el = letEls[i];
+      const el = letEls[i], x = c.x * vw;
+      // feet in the scene's own grass where it's drawing, else where the still has it
+      const ground = scene && sceneUp ? scene.groundY(x) + c.dy * vh * 0.5 + vh * 0.03 : dy + (GRASS + c.dy) * dh;
       el.style.setProperty('--size', Math.round(Math.min(c.h * dh, cap)) + 'px');
-      el.style.left = c.x * vw + 'px';
-      el.style.top = Math.min(dy + (GRASS + c.dy) * dh, vh - 12) + 'px';
+      el.style.left = x + 'px';
+      el.style.top = Math.min(ground, vh - 12) + 'px';
     });
   }
+
+  // ── the living scene ──
+  const scene = window.ValleyScene && sceneCanvas ? window.ValleyScene.create(sceneCanvas, { reduceMotion: reduce }) : null;
+  let sceneUp = false;
 
   // ── the dissolve: in a worker where the browser can, a plain fade where it can't ──
   let worker = null, ready = false, curP = 0;
   const offscreen = 'transferControlToOffscreen' in canvas && typeof Worker === 'function' && typeof createImageBitmap === 'function';
+  let failed = !offscreen; // no grains to come apart in: the picture just fades
 
-  async function startWorker(img) {
-    const bitmap = await createImageBitmap(img);
+  // the worker takes its grains' colors from a picture: the scene as it is now, or the still
+  async function startWorker(src) {
+    const bitmap = await createImageBitmap(src);
     worker = new Worker('/js/valley-worker.js');
     worker.onmessage = ({ data }) => { if (data.type === 'ready') { ready = true; sync(); } };
-    worker.onerror = () => { worker = null; ready = false; sync(); };
+    worker.onerror = () => { worker = null; ready = false; failed = true; sync(); };
     const off = canvas.transferControlToOffscreen();
-    worker.postMessage({ type: 'init', canvas: off, bitmap, vw, vh, FX, FY, RIFT, LIFE, reduce, p: curP }, [off, bitmap]);
+    worker.postMessage({ type: 'init', canvas: off, bitmap, vw, vh, FX, FY, RIFT, LIFE, reduce, live: !!scene, p: curP }, [off, bitmap]);
     worker.postMessage({ type: 'p', p: curP });
+  }
+  function riftNow() {
+    const r = scene.rift();
+    RIFT = [r.x / vw, r.y / vh];
+  }
+  async function resnap() {
+    if (!worker || !scene) return;
+    riftNow();
+    const bitmap = await createImageBitmap(sceneCanvas);
+    worker.postMessage({ type: 'resize', vw, vh, bitmap, RIFT }, [bitmap]);
   }
 
   // ── overlay copy ──
@@ -89,7 +108,6 @@
       el.style.opacity = gone;
       el.style.translate = `0 ${-smooth(0.5, 0.8, p) * (30 + i * 10)}px`;
     });
-    motesCanvas.style.opacity = 1 - smooth(0.02, 0.12, p);
   }
 
   function progress() {
@@ -97,11 +115,13 @@
     return span > 0 ? G.clamp(-r.top / span, 0, 1) : 0;
   }
 
-  // the still stays up until the worker has a frame of its own to show
+  // the picture stays up until the worker has a frame of its own to show
   function sync() {
     const dissolving = curP > 0.004 && ready && !!worker;
     section.classList.toggle('is-dissolving', dissolving);
-    still.style.opacity = worker ? '' : 1 - smooth(0.08, 0.6, curP);
+    const fade = failed ? 1 - smooth(0.08, 0.6, curP) : '';
+    still.style.opacity = fade;
+    if (sceneCanvas) sceneCanvas.style.opacity = fade;
   }
 
   let ticking = false;
@@ -124,31 +144,33 @@
     const w = stage.clientWidth, h = stage.clientHeight;
     if (w === vw && h === vh) return;
     vw = w; vh = h;
+    if (scene) { scene.resize(); scene.frame(performance.now() / 1000); }
     placeLets();
     clearTimeout(resizeTimer);
-    if (worker) resizeTimer = setTimeout(() => worker.postMessage({ type: 'resize', vw, vh }), 150);
+    if (worker) resizeTimer = setTimeout(() => (scene ? resnap() : worker.postMessage({ type: 'resize', vw, vh })), 150);
   }
 
-  // ── motes drifting over the grass (fireflies by night in the game) ──
-  if (!reduce) {
-    const mote = document.createElement('canvas');
-    mote.width = mote.height = 20;
-    const mc = mote.getContext('2d'), mg = mc.createRadialGradient(10, 10, 0, 10, 10, 10);
-    mg.addColorStop(0, 'rgba(255,252,230,1)'); mg.addColorStop(1, 'rgba(255,252,230,0)');
-    mc.fillStyle = mg; mc.fillRect(0, 0, 20, 20);
-    const motes = Array.from({ length: 46 }, (_, i) => ({ x: G.h(i, 1), y: 0.6 + G.h(i, 2) * 0.38, s: 0.4 + G.h(i, 3), p: G.h(i, 4) * 6.28 }));
-    G.whileVisible(motesCanvas, (t) => {
-      if (curP > 0.15) return;
-      const { ctx: m, w, h } = G.fit(motesCanvas);
-      m.clearRect(0, 0, w, h);
-      for (const q of motes) {
-        const x = ((q.x + t * 0.004 * q.s) % 1) * w + Math.sin(t * 0.6 + q.p) * 12;
-        const y = q.y * h - ((t * 6 * q.s + q.p * 40) % 70);
-        m.globalAlpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(t * 1.7 + q.p * 3));
-        m.drawImage(mote, x - 5, y - 5, 10, 10);
-      }
-      m.globalAlpha = 1;
-    }, { fps: 40 });
+  // ── the scene, drawn while it's on screen and not yet all gone; a finger in the grass stirs it ──
+  if (scene) {
+    G.whileVisible(sceneCanvas, (t) => {
+      if (curP > 0.75) return;
+      scene.frame(t);
+      if (sceneUp) return;
+      sceneUp = true;
+      section.classList.add('has-scene');
+      riftNow();
+      placeLets();
+      if (offscreen) startWorker(sceneCanvas).catch((err) => { console.error('valley', err); worker = null; failed = true; sync(); });
+    }, { fps: 60 });
+    let px = null, py = null;
+    stage.addEventListener('pointermove', (e) => {
+      const r = sceneCanvas.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      scene.pointer(x, y, px == null ? 0 : x - px, py == null ? 0 : y - py);
+      px = x; py = y;
+    }, { passive: true });
+    const leave = () => { scene.pointer(null); px = py = null; };
+    stage.addEventListener('pointerleave', leave);
+    stage.addEventListener('pointercancel', leave);
   }
 
   // ── the logo gathers out of gold grains, then the real logo takes over, with a few glints ──
@@ -229,10 +251,11 @@
   sync();
   addEventListener('scroll', onScroll, { passive: true });
   new ResizeObserver(layout).observe(stage);
-  G.loadImage(still.currentSrc || still.src).then((i) => {
+  if (scene) scene.resize();
+  else G.loadImage(still.currentSrc || still.src).then((i) => {
     IW = i.naturalWidth; IH = i.naturalHeight;
     placeLets();
     if (offscreen) return startWorker(i);
-  }).catch((err) => { console.error('valley', err); worker = null; sync(); });
+  }).catch((err) => { console.error('valley', err); worker = null; failed = true; sync(); });
   logoGrains().catch((err) => { console.error('logo grains', err); document.querySelector('.hero-logo')?.classList.remove('is-grains'); });
 })();

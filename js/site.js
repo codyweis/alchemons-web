@@ -1,93 +1,7 @@
-/* Alchemons — the Lets, the biomes, and the page's small behaviours. */
+/* Alchemons — the biomes, and the page's small behaviours. */
 (() => {
   const G = window.Grains;
   const reduce = G.reduceMotion;
-
-  // ── The Lets: each one gathers out of grains, as an ally does in the field ──
-  const grid = document.getElementById('let-grid');
-  const feature = document.getElementById('let-feature');
-  const letCanvas = document.getElementById('let-canvas');
-  let lets = [], current = null, gather = null;
-
-  // the grid uses the small strips; the one on the stage gets the game's full-size frames
-  const strips = new Map();
-  const strip = (id) => {
-    if (!strips.has(id)) strips.set(id, G.loadImage(`/assets/creatures/hd/${id}.webp`));
-    return strips.get(id);
-  };
-
-  async function selectLet(id) {
-    const c = lets.find((l) => l.id === id);
-    if (!c) return;
-    current = c;
-    grid.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.id === id));
-    const tint = G.E[c.type].tint;
-    feature.style.setProperty('--c', tint);
-    document.getElementById('let-meta').textContent = `${c.type} · ${c.rarity}`;
-    document.getElementById('let-name').textContent = c.name;
-    document.getElementById('let-desc').textContent = c.desc;
-    const img = await strip(id);
-    if (current !== c) return;
-    // sample the first frame into grains
-    const F = img.naturalHeight, step = Math.max(2, Math.round(F / 85));
-    const tmp = document.createElement('canvas'); tmp.width = F; tmp.height = F;
-    const tx = tmp.getContext('2d', { willReadFrequently: true });
-    tx.drawImage(img, 0, 0, F, F, 0, 0, F, F);
-    const px = tx.getImageData(0, 0, F, F).data, pts = [];
-    for (let y = 0; y < F; y += step) for (let x = 0; x < F; x += step) {
-      const i = (y * F + x) * 4;
-      if (px[i + 3] < 120) continue;
-      const k = pts.length;
-      pts.push({ x: x / F, y: y / F, c: `rgb(${px[i]},${px[i + 1]},${px[i + 2]})`, a: G.h(k, 1) * 6.283, r: 0.25 + G.h(k, 2) * 0.5, d: G.h(k, 3) * 0.45 });
-    }
-    gather = { img, pts, step: step / F, t0: performance.now() / 1000, frames: c.frames, ms: c.ms, tint: G.E[c.type].rgb, ring: id === 'LET15' };
-  }
-
-  G.whileVisible(letCanvas, (t) => {
-    const { ctx, w, h } = G.fit(letCanvas);
-    ctx.clearRect(0, 0, w, h);
-    if (!gather) return;
-    const g = gather, age = reduce ? 9 : t - g.t0;
-    const size = Math.min(w, h) * 0.78, ox = (w - size) / 2, oy = (h - size) / 2 + h * 0.02;
-    // its element's light where it stands
-    const glow = ctx.createRadialGradient(w / 2, h * 0.56, 0, w / 2, h * 0.56, size * 0.55);
-    glow.addColorStop(0, G.rgba(g.tint, 0.22)); glow.addColorStop(1, G.rgba(g.tint, 0));
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, w, h);
-    const settled = G.ease((age - 1.1) / 0.35);
-    if (settled < 1) {
-      const gs = g.step * size * 0.9;
-      for (const q of g.pts) {
-        const u = G.ease((age - q.d) / 0.8);
-        const spin = (1 - u) * 2.2;
-        const r = (1 - u) * size * q.r;
-        const x = ox + q.x * size + Math.cos(q.a + spin) * r;
-        const y = oy + q.y * size + Math.sin(q.a + spin) * r - (1 - u) * size * 0.15;
-        ctx.globalAlpha = Math.min(1, u * 1.6) * (1 - settled);
-        ctx.fillStyle = q.c;
-        ctx.fillRect(x, y, gs, gs);
-      }
-      ctx.globalAlpha = 1;
-    }
-    if (settled > 0) {
-      const F = g.img.naturalHeight, frame = reduce ? 0 : Math.floor((age * 1000) / g.ms) % g.frames;
-      const rt = reduce ? 0 : t;
-      if (g.ring) G.DarkletRing.paint(ctx, ox, oy, size, frame, rt, { front: false, opacity: settled });
-      ctx.globalAlpha = settled;
-      ctx.drawImage(g.img, frame * F, 0, F, F, ox, oy, size, size);
-      ctx.globalAlpha = 1;
-      if (g.ring) G.DarkletRing.paint(ctx, ox, oy, size, frame, rt, { front: true, opacity: settled });
-    }
-  }, { fps: 60 });
-
-  fetch('/assets/data/lets.json').then((r) => r.json()).then((data) => {
-    const order = Object.keys(G.E);
-    lets = data.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
-    grid.innerHTML = lets.map((c) => `<li><button type="button" data-id="${c.id}" data-el="${c.type}" style="--c:${G.E[c.type].tint}" aria-pressed="false" aria-label="${c.name}">
-      <span class="sprite" style="background-image:url(/assets/creatures/${c.id}.webp);--frames:${c.frames};--ms:${c.ms}ms"></span></button></li>`).join('');
-    grid.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectLet(b.dataset.id); });
-    grid.addEventListener('pointerover', (e) => { const b = e.target.closest('button'); if (b) strip(b.dataset.id); });
-    new IntersectionObserver(([en], io) => { if (en.isIntersecting) { io.disconnect(); selectLet('LET02'); } }, { rootMargin: '200px' }).observe(feature);
-  }).catch(() => {});
 
   // ── Biomes: portals, and a window that changes in grains ──
   const BIOMES = [
@@ -229,9 +143,9 @@
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
     }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.section-head, .codex-stage, .faction, .let-viewer, .genes, .biome-viewer, .phone, .trailer-copy, .card, .contests, .waitlist-inner > *').forEach((el, i) => {
+    document.querySelectorAll('.section-head, .fuse-stage, .let-grid, .genes, .biome-viewer, .phone, .trailer-copy, .card, .contests, .waitlist-inner > *').forEach((el, i) => {
       el.classList.add('reveal');
-      if (el.classList.contains('card') || el.classList.contains('faction')) el.style.transitionDelay = (i % 5) * 70 + 'ms';
+      if (el.classList.contains('card')) el.style.transitionDelay = (i % 5) * 70 + 'ms';
       io.observe(el);
     });
   }
