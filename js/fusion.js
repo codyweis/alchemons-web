@@ -281,7 +281,7 @@
     lets = data.sort((a, b) => ORDER.indexOf(a.type) - ORDER.indexOf(b.type));
     for (const c of lets) { byId[c.id] = c; byEl[c.type] = c; }
     grid.innerHTML = lets.map((c) => `<li><button type="button" data-id="${c.id}" data-el="${c.type}" style="--c:${G.E[c.type].tint}" aria-pressed="false" aria-label="${c.name}">
-      <span class="sprite" style="background-image:url(/assets/creatures/${c.id}.webp);--frames:${c.frames};--ms:${c.ms}ms"></span></button></li>`).join('');
+      <span class="sprite" style="background-image:url(/assets/creatures/${c.id}.webp?v=2);--frames:${c.frames};--ms:${c.ms}ms"></span></button></li>`).join('');
     grid.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { userActed = true; choose(b.dataset.id); } });
     grid.addEventListener('pointerover', (e) => { const b = e.target.closest('button'); if (b) sheet(byId[b.dataset.id]); });
     G.whileVisible(canvas, draw, { fps: 60 });

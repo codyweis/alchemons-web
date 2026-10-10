@@ -35,7 +35,7 @@
   const letEls = LETS.map((c) => {
     const el = document.createElement('span');
     el.className = 'sprite' + (reduce ? '' : ' is-anim');
-    el.style.backgroundImage = `url(/assets/creatures/${c.id}.webp)`;
+    el.style.backgroundImage = `url(/assets/creatures/${c.id}.webp?v=2)`;
     el.style.setProperty('--frames', 4);
     el.style.setProperty('--ms', '120ms');
     // flip after centring on the feet; the standalone `scale` property would mirror the centring too
@@ -71,7 +71,7 @@
   // the worker takes its grains' colors from a picture: the scene as it is now, or the still
   async function startWorker(src) {
     const bitmap = await createImageBitmap(src);
-    worker = new Worker('/js/valley-worker.js');
+    worker = new Worker('/js/valley-worker.js?v=3');
     worker.onmessage = ({ data }) => { if (data.type === 'ready') { ready = true; sync(); } };
     worker.onerror = () => { worker = null; ready = false; failed = true; sync(); };
     const off = canvas.transferControlToOffscreen();
