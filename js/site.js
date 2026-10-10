@@ -143,7 +143,7 @@
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
     }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.section-head, .fuse-stage, .let-grid, .genes, .biome-viewer, .phone, .trailer-copy, .card, .contests, .waitlist-inner > *').forEach((el, i) => {
+    document.querySelectorAll('.section-head, .fuse-stage, .let-grid, .genes, .biome-viewer, .phone, .trailer-copy, .card, .breeding, .waitlist-inner > *').forEach((el, i) => {
       el.classList.add('reveal');
       if (el.classList.contains('card')) el.style.transitionDelay = (i % 5) * 70 + 'ms';
       io.observe(el);

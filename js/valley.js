@@ -29,7 +29,7 @@
   const LETS = [
     { id: 'LET01', x: 0.14, dy: -0.005, h: 0.10 },
     { id: 'LET02', x: 0.32, dy: 0.015, h: 0.105 },
-    { id: 'LET12', x: 0.68, dy: 0.0, h: 0.10, flip: true },
+    { id: 'LET03', x: 0.68, dy: 0.0, h: 0.10, flip: true },
     { id: 'LET04', x: 0.86, dy: -0.015, h: 0.095, flip: true },
   ];
   const letEls = LETS.map((c) => {
