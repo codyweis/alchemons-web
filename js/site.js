@@ -9,9 +9,10 @@
   const letCanvas = document.getElementById('let-canvas');
   let lets = [], current = null, gather = null;
 
+  // the grid uses the small strips; the one on the stage gets the game's full-size frames
   const strips = new Map();
   const strip = (id) => {
-    if (!strips.has(id)) strips.set(id, G.loadImage(`/assets/creatures/${id}.webp`));
+    if (!strips.has(id)) strips.set(id, G.loadImage(`/assets/creatures/hd/${id}.webp`));
     return strips.get(id);
   };
 
@@ -28,7 +29,7 @@
     const img = await strip(id);
     if (current !== c) return;
     // sample the first frame into grains
-    const F = img.naturalHeight, step = 3;
+    const F = img.naturalHeight, step = Math.max(2, Math.round(F / 85));
     const tmp = document.createElement('canvas'); tmp.width = F; tmp.height = F;
     const tx = tmp.getContext('2d', { willReadFrequently: true });
     tx.drawImage(img, 0, 0, F, F, 0, 0, F, F);
@@ -39,7 +40,7 @@
       const k = pts.length;
       pts.push({ x: x / F, y: y / F, c: `rgb(${px[i]},${px[i + 1]},${px[i + 2]})`, a: G.h(k, 1) * 6.283, r: 0.25 + G.h(k, 2) * 0.5, d: G.h(k, 3) * 0.45 });
     }
-    gather = { img, pts, step: step / F, t0: performance.now() / 1000, frames: c.frames, ms: c.ms, tint: G.E[c.type].rgb };
+    gather = { img, pts, step: step / F, t0: performance.now() / 1000, frames: c.frames, ms: c.ms, tint: G.E[c.type].rgb, ring: id === 'LET15' };
   }
 
   G.whileVisible(letCanvas, (t) => {
@@ -68,10 +69,13 @@
       ctx.globalAlpha = 1;
     }
     if (settled > 0) {
-      const F = g.img.naturalHeight, frame = Math.floor((age * 1000) / g.ms) % g.frames;
+      const F = g.img.naturalHeight, frame = reduce ? 0 : Math.floor((age * 1000) / g.ms) % g.frames;
+      const rt = reduce ? 0 : t;
+      if (g.ring) G.DarkletRing.paint(ctx, ox, oy, size, frame, rt, { front: false, opacity: settled });
       ctx.globalAlpha = settled;
-      ctx.drawImage(g.img, (reduce ? 0 : frame) * F, 0, F, F, ox, oy, size, size);
+      ctx.drawImage(g.img, frame * F, 0, F, F, ox, oy, size, size);
       ctx.globalAlpha = 1;
+      if (g.ring) G.DarkletRing.paint(ctx, ox, oy, size, frame, rt, { front: true, opacity: settled });
     }
   }, { fps: 60 });
 
@@ -81,24 +85,25 @@
     grid.innerHTML = lets.map((c) => `<li><button type="button" data-id="${c.id}" data-el="${c.type}" style="--c:${G.E[c.type].tint}" aria-pressed="false" aria-label="${c.name}">
       <span class="sprite" style="background-image:url(/assets/creatures/${c.id}.webp);--frames:${c.frames};--ms:${c.ms}ms"></span></button></li>`).join('');
     grid.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) selectLet(b.dataset.id); });
+    grid.addEventListener('pointerover', (e) => { const b = e.target.closest('button'); if (b) strip(b.dataset.id); });
     new IntersectionObserver(([en], io) => { if (en.isIntersecting) { io.disconnect(); selectLet('LET02'); } }, { rootMargin: '200px' }).observe(feature);
   }).catch(() => {});
 
   // ── Biomes: portals, and a window that changes in grains ──
   const BIOMES = [
-    ['valley', 'The Valley', 'Ridge after ridge out of the haze, down to a meadow of grass made of grains.', '#7fd68c'],
-    ['sky', 'Skyward Reach', 'Isles of pale stone over a sea of cloud, gold under a low sun and silver under the moon.', '#e8eef7'],
-    ['arcane', 'The Arcane Expanse', 'A plain of still black glass that gives everything above it back, upside down.', '#b07cff'],
-    ['volcano', 'The Ashen Volcano', 'A cone smoking over black rock and lava. A finger on the lava breaks the crust.', '#ff7a3a'],
-    ['swamp', 'The Swamp', 'A still bog lake in green haze, cypress on fluted feet, duckweed that parts for a finger.', '#6fd0a0'],
-    ['tidal', 'The Tidal Shelf', 'Basalt columns at the edge of the sea. The tide comes and goes on the real clock.', '#7fb8ff'],
+    ['sky', 'Skyward Reach', 'Floating stone islands over the clouds, gold at sunset and silver under the moon.', '#e8eef7'],
+    ['arcane', 'Arcane Expanse', 'A plain of still black glass that reflects everything above it.', '#b07cff'],
+    ['volcano', 'Ashen Volcano', 'A smoking cone over black rock. Touch the lava and the crust breaks.', '#ff7a3a'],
+    ['swamp', 'Sunken Swamp', 'A bog lake in green haze, with cypress trees and duckweed that parts when you touch it.', '#6fd0a0'],
+    ['tidal', 'Tidal Shelf', 'Basalt columns at the edge of the sea. The tide follows the real clock.', '#7fb8ff'],
+    ['valley', 'Verdant Valley', 'Where the game begins: a meadow under hills and haze, and a rift in the clouds.', '#7fd68c'],
   ];
   const portalsEl = document.getElementById('portals');
   const win = document.querySelector('.biome-window');
   const winImg = document.getElementById('biome-still');
   const winCanvas = document.getElementById('biome-canvas');
   if (portalsEl && win) {
-    portalsEl.innerHTML = BIOMES.map(([k, name], i) => `<li><button type="button" data-k="${k}" aria-pressed="${i === 0}" aria-label="${name}"><canvas aria-hidden="true"></canvas>${name.replace(/^The /, '')}</button></li>`).join('');
+    portalsEl.innerHTML = BIOMES.map(([k, name], i) => `<li><button type="button" data-k="${k}" aria-pressed="${i === 0}" aria-label="${name}"><canvas aria-hidden="true"></canvas>${name}</button></li>`).join('');
     const portalImgs = new Map();
     BIOMES.forEach(([k]) => G.loadImage(`/assets/biomes/${k}-portal.webp`).then((im) => portalImgs.set(k, im)));
     const buttons = [...portalsEl.querySelectorAll('button')];
@@ -140,7 +145,7 @@
     let shift = null;
     const cache = new Map();
     const img = (k) => { if (!cache.has(k)) cache.set(k, G.loadImage(`/assets/biomes/${k}.webp`)); return cache.get(k); };
-    let currentK = 'valley', wantK = currentK;
+    let currentK = BIOMES[0][0], wantK = currentK;
 
     async function showBiome(k) {
       if (k === wantK) return;

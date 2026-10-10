@@ -108,8 +108,11 @@ window.Grains = (() => {
         gr.addColorStop(0, rgba(c, 0.3 * g)); gr.addColorStop(0.45, rgba(c, 0.09 * g)); gr.addColorStop(1, rgba(c, 0));
         ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, r * 2, 0, 7); ctx.fill();
       }
-      const buckets = Array.from({ length: FAR + NEAR }, () => []);
-      const glints = [], embers = [];
+      // reused frame to frame: seventeen orbs at 30fps shouldn't make garbage
+      const buckets = this.buckets ??= Array.from({ length: FAR + NEAR }, () => []);
+      const glints = this.glints ??= [], embers = this.embers ??= [];
+      for (const b of buckets) b.length = 0;
+      glints.length = 0; embers.length = 0;
       if (grains) {
         this.layout(t);
         const q = Math.floor(t * 12);
@@ -173,6 +176,69 @@ window.Grains = (() => {
     }
   }
 
+  /* Darklet's galaxy ring, from lib/widgets/fx/darklet_ring.dart: dust orbiting
+     its head. The sheet is the ringless Darklet; paint the far side before the
+     sprite and the near side after, into the frame's own box (x, y, size). */
+  const DarkletRing = (() => {
+    const FRAME = 724, HEAD_X = 361, HEAD_Y = [315, 319, 323, 319];
+    const UNIT = 1 / 0.88, TILT = 0.47, SQUASH = 0.31, cosT = Math.cos(TILT), sinT = Math.sin(TILT);
+    const COLORS = ['#7474EC', '#8B91FF', '#9ACAFF', '#C7ECFF'].map(hex);
+    let seed = 2309;
+    const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+    const grains = Array.from({ length: 260 }, () => {
+      const lane = random();
+      const radius = lane < 0.58 ? 179 + (random() + random() - 1) * 13
+        : lane < 0.9 ? 200 + (random() + random() - 1) * 9
+        : 220 + (random() - 0.5) * 11;
+      return { radius, angle: random() * Math.PI * 2, phase: random() * Math.PI * 2, size: 0.35 + random() * 0.8, bright: random() > 0.9, color: Math.floor(random() * COLORS.length) };
+    });
+    const speed = (r) => 0.76 / Math.pow(r / 180, 1.5);
+
+    function paint(ctx, x, y, size, index, t, { front, opacity = 1 }) {
+      if (opacity <= 0) return;
+      const s = size / FRAME, k = s * UNIT;
+      const cx = x + HEAD_X * s, cy = y + HEAD_Y[clamp(index, 0, 3)] * s;
+      const depth = (front ? 1 : 0.62) * opacity;
+      const at = (r, a) => {
+        const px = Math.cos(a) * r, py = Math.sin(a) * r * SQUASH;
+        return [cx + (px * cosT - py * sinT) * k, cy + (px * sinT + py * cosT) * k];
+      };
+      const arc = (r, a, b) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 28; i++) { const [ox, oy] = at(r, a + (b - a) * i / 28); i ? ctx.lineTo(ox, oy) : ctx.moveTo(ox, oy); }
+      };
+      const line = (width, c, alpha) => { ctx.lineWidth = width * k; ctx.strokeStyle = rgba(c, clamp(alpha, 0, 1)); ctx.stroke(); };
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      const start = front ? 0 : Math.PI, end = front ? Math.PI : Math.PI * 2;
+      for (const r of [176, 184, 200]) {
+        for (const [w, c, a] of [[11, 0, 0.032], [5, 1, 0.055], [1.1, 2, 0.12]]) { arc(r, start, end); line(w, COLORS[c], a * depth); }
+      }
+      // stretched, turning clumps give the disc its swirl
+      for (let band = 0; band < 4; band++) {
+        const r = 174 + band * 11, sp = speed(r);
+        for (let j = 0; j < 2; j++) {
+          const angle = t * sp + band * 1.7 + j * Math.PI;
+          if ((Math.sin(angle) > 0) !== front) continue;
+          arc(r, angle - 0.55, angle); line(2.4, COLORS[1], 0.1 * depth);
+          arc(r, angle - 0.55, angle); line(0.8, COLORS[3], 0.34 * depth);
+        }
+      }
+      for (const g of grains) {
+        const a = g.angle + t * speed(g.radius);
+        if ((Math.sin(a) > 0) !== front) continue;
+        const [ox, oy] = at(g.radius, a);
+        const tw = 0.55 + 0.45 * Math.sin(t * 1.6 + g.phase) ** 2, c = COLORS[g.color];
+        ctx.fillStyle = rgba(c, clamp((g.bright ? 0.95 : 0.6) * tw * depth, 0, 1));
+        ctx.beginPath(); ctx.arc(ox, oy, g.size * k, 0, 7); ctx.fill();
+        if (g.bright) { ctx.fillStyle = rgba(c, 0.075 * tw * depth); ctx.beginPath(); ctx.arc(ox, oy, g.size * 3 * k, 0, 7); ctx.fill(); }
+      }
+      ctx.restore();
+    }
+    return { paint };
+  })();
+
   // Size a canvas's backing store to its CSS box; returns the CSS size.
   function fit(canvas, maxDpr = 2) {
     const dpr = Math.min(devicePixelRatio || 1, maxDpr);
@@ -216,5 +282,5 @@ window.Grains = (() => {
 
   const pack = (r, g, b) => (255 << 24) | (b << 16) | (g << 8) | r;
 
-  return { E, Orb, hex, mix, rgba, clamp, ease, h, fit, whileVisible, loadImage, coverPixels, pack, reduceMotion };
+  return { E, Orb, DarkletRing, hex, mix, rgba, clamp, ease, h, fit, whileVisible, loadImage, coverPixels, pack, reduceMotion };
 })();

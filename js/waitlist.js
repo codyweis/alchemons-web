@@ -49,7 +49,7 @@ form?.addEventListener('submit', async (e) => {
       email, platform, source: 'site', createdAt: serverTimestamp(),
     });
     form.classList.add('is-done');
-    say('You’re on the list. We’ll write once, when the valley opens.', 'ok');
+    say('You’re on the list. We’ll email you when Alchemons launches.', 'ok');
   } catch (err) {
     console.error('waitlist', err);
     button.disabled = false;

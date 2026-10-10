@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Alchemons — Beauty masks reality</title>
-  <meta name="description" content="Alchemons is a creature-alchemy RPG for iOS and Android. Fuse the elements, raise your Alchemons, and find out who made the valley beautiful.">
+  <meta name="description" content="Alchemons is a creature-alchemy RPG for iOS and Android. Fuse elements to breed new Alchemons, explore wild realms and open space, and work out what is behind the valley.">
   <meta name="theme-color" content="#04070a">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
   <link rel="icon" type="image/png" sizes="64x64" href="/assets/brand/icon-64.png">
@@ -12,7 +12,7 @@
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Alchemons — Beauty masks reality">
-  <meta property="og:description" content="A creature-alchemy RPG. Fuse the elements, raise your Alchemons, and find out who made the valley beautiful.">
+  <meta property="og:description" content="A creature-alchemy RPG for iOS and Android. Fuse elements to breed new Alchemons, explore wild realms and open space, and work out what is behind the valley.">
   <meta property="og:image" content="/assets/brand/og.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -59,13 +59,13 @@
             <a class="btn btn-gold" href="#waitlist">Join the waitlist</a>
             <a class="btn btn-ghost" href="#trailer">Watch the trailer</a>
           </div>
-          <p class="hero-cue" aria-hidden="true"><span>Look closer</span><i></i></p>
+          <p class="hero-cue" aria-hidden="true"><span>Scroll</span><i></i></p>
         </div>
 
         <div class="lines">
           <p class="line" data-in="0.10" data-out="0.30">You wake in a valley you don't remember.</p>
           <p class="line" data-in="0.32" data-out="0.52">The grass is too soft. The sky is too still.</p>
-          <p class="line" data-in="0.54" data-out="0.74">Someone made this place beautiful.<br><span>Someone had a reason.</span></p>
+          <p class="line" data-in="0.54" data-out="0.74">Someone made this place.<br><span>You don't know why yet.</span></p>
           <p class="line line-final" data-in="0.80" data-out="2">Beauty masks reality</p>
         </div>
       </div>
@@ -75,9 +75,9 @@
     <section class="section alchemy" id="alchemy">
       <div class="wrap">
         <header class="section-head">
-          <p class="eyebrow">Fusion Codex</p>
-          <h2>Two elements go in. One comes out.</h2>
-          <p class="lede">Every Alchemon is made of its element. Fuse two and the grains decide what they become. Pick two to try a formula from the game's codex.</p>
+          <p class="eyebrow">Fusion</p>
+          <h2>Breed new Alchemons by fusing elements</h2>
+          <p class="lede">Every Alchemon belongs to one of seventeen elements. Fuse two and you get a new Alchemon, usually of a third element, with odds set by the pairing. Pick two elements below to see a recipe from the game.</p>
         </header>
 
         <div class="codex-stage bracketed">
@@ -94,8 +94,8 @@
       <div class="wrap">
         <header class="section-head">
           <p class="eyebrow">The Lets</p>
-          <h2>Small, bright, and made by hand.</h2>
-          <p class="lede">Every family of Alchemons takes a form in every element. The Lets come first: seventeen of them, one for each element. Each one you extract inherits its parents' nature, potential, size and tint.</p>
+          <h2>Seventeen Lets, one for each element</h2>
+          <p class="lede">There are eight families of Alchemons, and each family has a form in every element. The Lets are the first family you meet. Every Alchemon you extract inherits its nature, potential, size and tint from its parents.</p>
         </header>
 
         <div class="let-viewer">
@@ -115,6 +115,7 @@
           <li><strong>4</strong><span>potentials rated 1–100: speed, strength, intelligence and beauty</span></li>
           <li><strong>11</strong><span>size and tint genes, from tiny to giant, thermal to albino</span></li>
           <li><strong>8</strong><span>families, each with its own mastery tree</span></li>
+          <li><strong>2</strong><span>known mutations from fusing in the wild, Alchemized and Transmuted. There may be more.</span></li>
         </ul>
       </div>
     </section>
@@ -123,16 +124,16 @@
     <section class="section biomes" id="biomes">
       <div class="wrap">
         <header class="section-head">
-          <p class="eyebrow">Alchemical Biomes</p>
-          <h2>Wild places, painted in grains.</h2>
-          <p class="lede">Each biome keeps the hour on your phone's clock, with the real phase of the moon, its own weather, and wild Alchemons that won't be there again once you leave.</p>
+          <p class="eyebrow">Wild realms</p>
+          <h2>Eight realms to harvest from</h2>
+          <p class="lede">Each realm runs on your phone's clock and the real phase of the moon, with its own weather. The wild Alchemons you find there are gone once you leave. Six are shown here; the Glass Dunes and Geode Hollow are in the game too.</p>
         </header>
 
         <div class="biome-viewer">
           <div class="biome-window bracketed">
             <canvas id="biome-canvas" aria-hidden="true"></canvas>
-            <img id="biome-still" src="/assets/biomes/valley.webp" alt="The Valley biome" width="1920" height="1056" loading="lazy">
-            <p class="biome-caption"><span id="biome-name">The Valley</span><span id="biome-line">Ridge after ridge out of the haze, down to a meadow of grass made of grains.</span></p>
+            <img id="biome-still" src="/assets/biomes/sky.webp" alt="Skyward Reach biome" width="1920" height="1056" loading="lazy">
+            <p class="biome-caption"><span id="biome-name">Skyward Reach</span><span id="biome-line">Floating stone islands over the clouds, gold at sunset and silver under the moon.</span></p>
           </div>
           <ul class="portals" id="portals" aria-label="Biomes"></ul>
         </div>
@@ -147,16 +148,16 @@
         </div>
         <div class="trailer-copy">
           <p class="eyebrow">Trailer</p>
-          <h2>Ninety seconds of what you'll make.</h2>
+          <h2>Gameplay trailer</h2>
           <ol class="chapters" id="chapters">
-            <li><button data-t="0">Fuse Alchemons</button></li>
-            <li><button data-t="12">Discover new species</button></li>
-            <li><button data-t="21">Explore the cosmos</button></li>
-            <li><button data-t="29">Elemental dungeons</button></li>
-            <li><button data-t="35">Survive endless waves</button></li>
-            <li><button data-t="38.5">Harvest wild Alchemons</button></li>
-            <li><button data-t="45">Make alchemy your own</button></li>
-            <li><button data-t="63">Endless secrets to discover</button></li>
+            <li><button data-t="0">Fusion</button></li>
+            <li><button data-t="12">Extraction</button></li>
+            <li><button data-t="21">Space travel</button></li>
+            <li><button data-t="29">Planet dungeons</button></li>
+            <li><button data-t="35">Survival</button></li>
+            <li><button data-t="38.5">Wild harvest</button></li>
+            <li><button data-t="45">Your home planet</button></li>
+            <li><button data-t="63">Enhancing, puzzles and the altar</button></li>
           </ol>
         </div>
       </div>
@@ -166,51 +167,59 @@
     <section class="section play" id="play">
       <div class="wrap">
         <header class="section-head">
-          <p class="eyebrow">Everything you make, you use</p>
-          <h2>One collection. Every way to play.</h2>
+          <p class="eyebrow">Game modes</p>
+          <h2>One collection for every mode</h2>
+          <p class="lede">The Alchemons you breed are the ones you take into the wild, into space, into dungeons and into contests.</p>
         </header>
 
         <div class="bento">
-          <article class="card card-tall">
-            <img src="/assets/biomes/arcane-portal.webp" alt="A Let standing on the still water of the Arcane biome at night" loading="lazy" width="720" height="720">
+          <article class="card">
+            <img style="--focus:50% 78%" src="/assets/media/cards/wild.webp" alt="Wild Alchemons in the Verdant Valley at sunset" loading="lazy" width="530" height="496">
             <div class="card-copy">
-              <h3>The wilderness</h3>
-              <p>Harvest wild Alchemons from the biomes by day and night, or fuse the two standing in front of you.</p>
+              <h3>The wild</h3>
+              <p>Harvest wild Alchemons by day and night, or fuse with the ones you find there.</p>
             </div>
           </article>
           <article class="card">
-            <img src="/assets/media/cards/cosmos.webp" alt="A small ship flying past an ocean planet" loading="lazy" width="640" height="800">
+            <img style="--focus:50% 72%" src="/assets/media/cards/cosmos.webp" alt="The ship flying past an ice planet" loading="lazy" width="608" height="760">
             <div class="card-copy">
               <h3>Open space</h3>
-              <p>Fly a party of three across the star chart: planets, stations, raids and wild encounters.</p>
+              <p>Find the ship and fly a party across the star chart to planets, stations and raids.</p>
             </div>
           </article>
           <article class="card">
-            <img src="/assets/media/cards/dungeon.webp" alt="A planet dungeon room with glowing doors" loading="lazy" width="640" height="800">
+            <img style="--focus:50% 80%" src="/assets/media/cards/dungeon.webp" alt="Alchemons in the Plant planet's dungeon" loading="lazy" width="552" height="678">
             <div class="card-copy">
               <h3>Planet dungeons</h3>
-              <p>Puzzle dungeons built on each element's physics: route fire, steer storms, flood the fen.</p>
+              <p>Seventeen planets, each a puzzle dungeon built on its element's rules, with a guardian at the end.</p>
             </div>
           </article>
           <article class="card">
-            <img src="/assets/media/cards/survival.webp" alt="Alchemons defending a glowing core from enemy waves" loading="lazy" width="640" height="800">
+            <img style="--focus:60% 50%" src="/assets/media/cards/survival.webp" alt="Alchemons defending a glowing core from enemy waves" loading="lazy" width="640" height="800">
             <div class="card-copy">
               <h3>Survival</h3>
-              <p>Hold the core against endless waves. Pick each family's mastery path before the run locks it in.</p>
+              <p>Hold the core against endless waves, with a mastery tree for each family.</p>
             </div>
           </article>
           <article class="card">
-            <img src="/assets/media/cards/fusion.webp" alt="A Crystalet and a Waterlet about to fuse" loading="lazy" width="640" height="800">
+            <img style="--focus:50% 62%" src="/assets/media/cards/alchemy.webp" alt="A Waterlet on a floating island altar in an alchemy puzzle" loading="lazy" width="640" height="800">
             <div class="card-copy">
               <h3>Alchemy puzzles</h3>
-              <p>Fifty drag-and-drop levels on the rules of transmutation. Fewer moves, more stars.</p>
+              <p>45 levels built on the fusion rules. Solve each in fewer moves for more stars.</p>
             </div>
           </article>
           <article class="card card-wide">
-            <img src="/assets/biomes/tidal.webp" alt="The Tidal Shelf at sunset, with Alchemons living on the rocks" loading="lazy" width="1760" height="1206">
+            <img style="--focus:50% 62%" src="/assets/biomes/tidal.webp" alt="The Tidal Shelf at sunset, with Alchemons living on the rocks" loading="lazy" width="1760" height="1206">
             <div class="card-copy">
-              <h3>A home of your own</h3>
-              <p>Arrange a home biome for your residents: scenery, weather, keepsakes and decor. They'll find things to do with all of it.</p>
+              <h3>A home realm</h3>
+              <p>Choose a realm to live in and furnish it with scenery, weather, keepsakes and decor. Each realm keeps its own residents.</p>
+            </div>
+          </article>
+          <article class="card">
+            <img style="--focus:50% 62%" src="/assets/media/cards/altar.webp" alt="Relics in grains circling the Mystic altar" loading="lazy" width="640" height="776">
+            <div class="card-copy">
+              <h3>Relics and Mystics</h3>
+              <p>Beat a planet's guardian, bring its relic to the altar, and summon a Mystic.</p>
             </div>
           </article>
         </div>
@@ -218,9 +227,9 @@
         <div class="contests bracketed">
           <div>
             <h3>Contests</h3>
-            <p>Four arenas across the cosmos test what you bred for. Master one and it's crowned in gold.</p>
+            <p>Four arenas each judge one thing you bred for. The fifth, the Celestial Nexus, judges all four at once.</p>
           </div>
-          <ul class="pills"><li>Beauty</li><li>Speed</li><li>Strength</li><li>Intelligence</li></ul>
+          <ul class="pills"><li>Speed</li><li>Strength</li><li>Intelligence</li><li>Beauty</li><li>All four</li></ul>
         </div>
 
         <p class="play-foot">Plays offline · Cloud saves optional</p>
@@ -232,8 +241,8 @@
       <canvas class="grains" id="grains" aria-hidden="true"></canvas>
       <div class="wrap waitlist-inner">
         <img class="waitlist-icon" src="/assets/brand/icon-180.png" alt="" width="88" height="88" loading="lazy">
-        <h2>The valley opens soon.</h2>
-        <p class="lede">Join the waitlist and we'll email you once, on the day Alchemons arrives on iOS and Android.</p>
+        <h2>Join the waitlist</h2>
+        <p class="lede">Alchemons is coming to iOS and Android. Leave your email and we'll send you one message when it launches.</p>
 
         <form class="signup" id="signup" novalidate>
           <label class="sr-only" for="email">Email address</label>
