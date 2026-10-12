@@ -87,6 +87,7 @@ p { margin: 0 0 1em; }
 .btn-gold:hover { background: var(--gold-hi); box-shadow: 0 0 34px rgba(233, 196, 106, .32); }
 .btn-ghost { color: var(--text); background: rgba(4, 7, 10, .42); border-color: rgba(255, 255, 255, .3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold-hi); }
+.btn[hidden] { display: none; }
 
 /* ── Nav ── */
 .nav {
