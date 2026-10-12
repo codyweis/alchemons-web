@@ -30,12 +30,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Text:ital@0;1&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap">
-  <link rel="stylesheet" href="/css/site.css?v=7">
+  <link rel="stylesheet" href="/css/site.css?v=8">
   <link rel="preload" as="image" href="/assets/biomes/valley.webp">
   <script src="/js/stores.js"></script>
 </head>
 <body>
-  <a class="skip" href="#trailer">Skip the intro</a>
+  <a class="skip" href="#features">Skip the intro</a>
 
   <header class="nav" id="nav">
     <a class="nav-brand" href="/" aria-label="Alchemons home">
@@ -43,6 +43,7 @@
       <span>Alchemons</span>
     </a>
     <nav class="nav-links" aria-label="Sections">
+      <a href="#features">Features</a>
       <a href="#trailer">Trailer</a>
       <a href="#fusion">Fusion</a>
       <a href="#biomes">Realms</a>
@@ -81,6 +82,26 @@
           <p class="line" data-in="0.42" data-out="0.70">Am I beginning to remember?<br><span>But what is remembrance without truth, if not illusion.</span></p>
           <p class="line line-final" data-in="0.78" data-out="2">Beauty masks reality</p>
         </div>
+      </div>
+    </section>
+
+    <!-- ───────── FEATURES ───────── -->
+    <section class="section features-section" id="features">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow">Features</p>
+          <h2>What's in the game</h2>
+        </header>
+        <ul class="features">
+          <li><h3>No Wi-Fi needed</h3><p>The game plays offline. You only need a connection for cloud saves, friends and trading.</p></li>
+          <li><h3>Advanced genetics</h3><p>Four Potentials, two Dominant stats, 27 natures, and size and tint genes pass from parent to child. Wild fusions can mutate.</p></li>
+          <li><h3>137 Alchemons</h3><p>Eight families across 17 elements. New ones come from fusing two together.</p></li>
+          <li><h3>Open-world space</h3><p>Fly your ship across an open star chart to planets, stations and raids.</p></li>
+          <li><h3>17 planet dungeons</h3><p>Each planet has a puzzle dungeon built on its element's rules, with a guardian at the end.</p></li>
+          <li><h3>Trading with friends</h3><p>Add friends by code, visit their planets and homes, and trade Alchemons one for one.</p></li>
+          <li><h3>Endless survival</h3><p>Hold the core against endless waves, with a mastery tree for each family.</p></li>
+          <li><h3>Your own planet</h3><p>Choose its size, colour and effects, and furnish the realm your Alchemons live in.</p></li>
+        </ul>
       </div>
     </section>
 
@@ -143,14 +164,6 @@
             <p>Two of each Alchemon's stats are Dominant and pass down more reliably. Fusing within a family only reshuffles what the parents have. Crossing two families with the right recipe is the only way a line climbs past both of them.</p>
           </div>
         </div>
-
-        <ul class="genes">
-          <li><strong>4</strong><span>Potentials, from 1 to 100: Speed, Strength, Intelligence and Beauty</span></li>
-          <li><strong>2</strong><span>Dominant stats in every Alchemon, passed down more reliably</span></li>
-          <li><strong>27</strong><span>natures that change how an Alchemon harvests, breeds and fights</span></li>
-          <li><strong>11</strong><span>size and tint genes, from tiny to giant, thermal to albino</span></li>
-          <li><strong>2</strong><span>known mutations from fusing in the wild, Alchemized and Transmuted. There may be more.</span></li>
-        </ul>
       </div>
     </section>
 
@@ -298,7 +311,7 @@
   <script src="/js/valley-scene.js?v=4" defer></script>
   <script src="/js/valley.js?v=4" defer></script>
   <script src="/js/fusion.js?v=7" defer></script>
-  <script src="/js/site.js?v=4" defer></script>
+  <script src="/js/site.js?v=5" defer></script>
   <script type="module" src="/js/waitlist.js?v=4"></script>
   <script>
     // Store buttons appear once js/stores.js has their links.
