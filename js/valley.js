@@ -71,7 +71,7 @@
   // the worker takes its grains' colors from a picture: the scene as it is now, or the still
   async function startWorker(src) {
     const bitmap = await createImageBitmap(src);
-    worker = new Worker('/js/valley-worker.js?v=3');
+    worker = new Worker('/js/valley-worker.js?v=4');
     worker.onmessage = ({ data }) => { if (data.type === 'ready') { ready = true; sync(); } };
     worker.onerror = () => { worker = null; ready = false; failed = true; sync(); };
     const off = canvas.transferControlToOffscreen();
@@ -115,11 +115,12 @@
     return span > 0 ? G.clamp(-r.top / span, 0, 1) : 0;
   }
 
-  // the picture stays up until the worker has a frame of its own to show
+  // the picture stays up until the worker has a frame of its own to show; until
+  // then (or if it never can) a quick scroll still finds the valley fading out
   function sync() {
     const dissolving = curP > 0.004 && ready && !!worker;
     section.classList.toggle('is-dissolving', dissolving);
-    const fade = failed ? 1 - smooth(0.08, 0.6, curP) : '';
+    const fade = dissolving || (ready && worker) ? '' : 1 - smooth(0.08, 0.6, curP);
     still.style.opacity = fade;
     if (sceneCanvas) sceneCanvas.style.opacity = fade;
   }

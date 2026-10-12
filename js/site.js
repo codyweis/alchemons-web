@@ -36,7 +36,7 @@
           ctx.globalAlpha = on ? 1 : 0.7;
           ctx.drawImage(im, cx - r, cy - r, r * 2, r * 2);
           const v = ctx.createRadialGradient(cx, cy, r * 0.55, cx, cy, r);
-          v.addColorStop(0, 'rgba(4,7,10,0)'); v.addColorStop(1, 'rgba(4,7,10,0.95)');
+          v.addColorStop(0, 'rgba(4,4,5,0)'); v.addColorStop(1, 'rgba(4,4,5,0.95)');
           ctx.globalAlpha = 1; ctx.fillStyle = v; ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
           ctx.restore();
         }
@@ -86,7 +86,7 @@
     G.whileVisible(win, (t) => {
       if (!shift) return;
       const s = shift, T = t - s.t0, { W, H, out, a, b } = s;
-      out.fill(G.pack(4, 7, 10));
+      out.fill(G.pack(4, 4, 5));
       const blendPx = (idx, c, al) => {
         const o = out[idx];
         const r = (o & 255) + ((c & 255) - (o & 255)) * al, g = ((o >>> 8) & 255) + (((c >>> 8) & 255) - ((o >>> 8) & 255)) * al;
@@ -122,14 +122,25 @@
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // ── Trailer chapters ──
+  // ── Trailer: the poster and a play button until it's started, then the browser's own controls ──
   const video = document.getElementById('trailer-video');
+  const screen = document.getElementById('screen');
+  const playBtn = document.getElementById('trailer-play');
   const chapterBtns = [...document.querySelectorAll('#chapters button')];
-  if (video && chapterBtns.length) {
-    chapterBtns.forEach((b) => b.addEventListener('click', () => {
-      const t = +b.dataset.t;
-      const go = () => { video.currentTime = t; video.play().catch(() => {}); };
+  if (video && screen) {
+    const playFrom = (t) => {
+      screen.classList.add('is-playing');
+      video.controls = true;
+      const go = () => { if (t != null) video.currentTime = t; video.play().catch(() => {}); };
       if (video.readyState >= 1) go(); else { video.preload = 'auto'; video.addEventListener('loadedmetadata', go, { once: true }); video.load(); }
+    };
+    playBtn?.addEventListener('click', () => playFrom(null));
+    video.addEventListener('play', () => { screen.classList.add('is-playing'); video.controls = true; });
+    chapterBtns.forEach((b) => b.addEventListener('click', () => {
+      playFrom(+b.dataset.t);
+      // on a phone the chapters sit under the video: bring it back into view
+      const r = screen.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > innerHeight) screen.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
     }));
     video.addEventListener('timeupdate', () => {
       let cur = 0;
@@ -143,9 +154,9 @@
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
     }, { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.section-head, .fuse-stage, .let-grid, .genes, .biome-viewer, .phone, .trailer-copy, .card, .breeding, .waitlist-inner > *').forEach((el, i) => {
+    document.querySelectorAll('.section-head, .fuse-stage, .let-grid, .genes, .biome-viewer, .screen, .trailer-copy, .card, .breeding, .waitlist-inner > *').forEach((el, i) => {
       el.classList.add('reveal');
-      if (el.classList.contains('card')) el.style.transitionDelay = (i % 5) * 70 + 'ms';
+      if (el.classList.contains('card')) el.style.transitionDelay = (i % 3) * 80 + 'ms';
       io.observe(el);
     });
   }
@@ -162,7 +173,7 @@
       for (const q of pts) {
         if (!reduce) { q.y -= (q.s * 18 * dt) / h * 10; if (q.y < -0.02) { q.y = 1.02; q.x = Math.random(); } }
         const a = (0.25 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.1 + q.p))) * Math.min(1, q.y * 2);
-        ctx.fillStyle = q.teal ? `rgba(127,214,200,${a})` : `rgba(247,226,170,${a})`;
+        ctx.fillStyle = q.teal ? `rgba(127,214,200,${a})` : `rgba(240,226,184,${a})`;
         const s = q.big ? 2.2 : 1.2;
         ctx.fillRect(q.x * w, q.y * h, s, s);
       }

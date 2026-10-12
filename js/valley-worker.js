@@ -5,8 +5,11 @@
    shows through until its grains go. */
 const h = (i, salt) => { const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453; return x - Math.floor(x); };
 const pack = (r, g, b, a = 255) => (a << 24) | (b << 16) | (g << 8) | r;
-const GOLD = [247, 226, 170];
+const GOLD = [240, 226, 184];
 const MAX_GRAINS = 420000;
+// the share of grains that fly as sparks; the rest just go, so the dark tree and
+// hill grains don't lift off in a sooty cloud
+const FLY = 0.36 * 6.283;
 
 let canvas, ctx, bitmap, FX, FY, RIFT, LIFE, reduce, live;
 let W = 0, H = 0, data, out, base, space, cur;
@@ -65,7 +68,7 @@ function build(vw, vh) {
   for (let y = 0; y < H; y++) {
     const floor = Math.max(0, (y / H - 0.72) / 0.28);
     for (let x = 0; x < W; x++) {
-      let r = 4, g = 7, b = 10;
+      let r = 4, g = 4, b = 5;
       const n = h(x * 131 + y * 7919, 3);
       if (n > 0.9965) { const l = 120 + (n - 0.9965) / 0.0035 * 135; r = l * 0.85; g = l; b = l * 0.95; }
       else if (floor > 0 && n < floor * floor * 0.22) { const l = 0.35 + h(x, y) * 0.65; r = 60 * l; g = 170 * l; b = 160 * l; }
@@ -130,6 +133,7 @@ function draw(p) {
   out.set(cur);
   // only the grains still in flight move; the ones before them have gone
   for (let i = lowerBound(p - LIFE); i < k; i++) {
+    if (gseed[i] > FLY) continue;
     const e = (p - gt[i]) / LIFE;
     if (e >= 1) continue;
     const ease = e * e * (1.4 - 0.4 * e);
@@ -137,8 +141,9 @@ function draw(p) {
     const y = gy[i] + gvy[i] * ease;
     const ix = x | 0, iy = y | 0;
     if (ix < 0 || iy < 0 || ix >= W || iy >= H) continue;
-    const c = gcol[i], w = Math.min(1, e * 1.7) * 0.7;
-    const a = (1 - e) * (1 - e * 0.3);
+    // each spark warms to gold as soon as it lets go, and fades as it flies
+    const c = gcol[i], w = Math.min(1, 0.5 + e * 1.5) * 0.88;
+    const a = (1 - e) * (1 - e * 0.3) * 0.95;
     blend(iy * W + ix, (c & 255) * (1 - w) + GOLD[0] * w, ((c >>> 8) & 255) * (1 - w) + GOLD[1] * w, ((c >>> 16) & 255) * (1 - w) + GOLD[2] * w, a);
   }
   ctx.putImageData(data, 0, 0);

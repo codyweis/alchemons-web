@@ -6,26 +6,36 @@
   <title>Alchemons — Beauty masks reality</title>
   <meta name="description" content="Alchemons is a creature-alchemy RPG for iOS and Android. Fuse elements to breed new Alchemons, explore wild realms and open space, and work out what is behind the valley.">
   <meta name="google-adsense-account" content="ca-pub-8875246042491117">
-  <meta name="theme-color" content="#04070a">
+  <meta name="theme-color" content="#040405">
+  <link rel="canonical" href="https://alchemons.com/">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
   <link rel="icon" type="image/png" sizes="64x64" href="/assets/brand/icon-64.png">
   <link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
 
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://alchemons.com/">
+  <meta property="og:site_name" content="Alchemons">
   <meta property="og:title" content="Alchemons — Beauty masks reality">
   <meta property="og:description" content="A creature-alchemy RPG for iOS and Android. Fuse elements to breed new Alchemons, explore wild realms and open space, and work out what is behind the valley.">
-  <meta property="og:image" content="/assets/brand/og.jpg">
+  <meta property="og:image" content="https://alchemons.com/assets/brand/og-v19.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:video" content="https://alchemons.com/assets/media/trailer-v19.mp4">
+  <meta property="og:video:type" content="video/mp4">
+  <meta property="og:video:width" content="720">
+  <meta property="og:video:height" content="1280">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://alchemons.com/assets/brand/og-v19.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap">
-  <link rel="stylesheet" href="/css/site.css?v=3">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Text:ital@0;1&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap">
+  <link rel="stylesheet" href="/css/site.css?v=4">
   <link rel="preload" as="image" href="/assets/biomes/valley.webp">
   <script src="/js/stores.js"></script>
 </head>
 <body>
-  <a class="skip" href="#fusion">Skip the intro</a>
+  <a class="skip" href="#trailer">Skip the intro</a>
 
   <header class="nav" id="nav">
     <a class="nav-brand" href="/" aria-label="Alchemons home">
@@ -33,9 +43,9 @@
       <span>Alchemons</span>
     </a>
     <nav class="nav-links" aria-label="Sections">
-      <a href="#fusion">Fusion</a>
-      <a href="#biomes">Biomes</a>
       <a href="#trailer">Trailer</a>
+      <a href="#fusion">Fusion</a>
+      <a href="#biomes">Realms</a>
       <a href="#play">Modes</a>
     </nav>
     <a class="btn btn-gold btn-sm" href="/play/">Play in browser</a>
@@ -56,7 +66,7 @@
             <canvas id="logo-grains" aria-hidden="true"></canvas>
             <img id="logo-still" src="/assets/brand/logo.webp" alt="Alchemons" width="884" height="219">
           </h1>
-          <p class="hero-tag">A creature-alchemy RPG · iOS, Android &amp; browser</p>
+          <p class="hero-tag"><span>A creature-alchemy RPG</span> <span>iOS, Android &amp; browser</span></p>
           <div class="hero-actions">
             <a class="btn btn-gold" href="/play/">Play free in your browser</a>
             <a class="btn btn-ghost" data-store="ios" rel="noopener" hidden>App Store</a>
@@ -74,6 +84,38 @@
       </div>
     </section>
 
+    <!-- ───────── TRAILER ───────── -->
+    <section class="section trailer" id="trailer">
+      <div class="wrap trailer-grid">
+        <div class="screen" id="screen">
+          <video id="trailer-video" src="/assets/media/trailer-v19.mp4" poster="/assets/media/trailer-v19.jpg" playsinline preload="none" width="720" height="1280"></video>
+          <button class="screen-play" id="trailer-play" type="button" aria-label="Play the trailer (2 minutes)">
+            <i aria-hidden="true"></i>
+            <span>Play trailer · 2:03</span>
+          </button>
+        </div>
+        <div class="trailer-copy">
+          <p class="eyebrow">Trailer</p>
+          <h2>Gameplay trailer</h2>
+          <p class="lede">Two minutes of the current build, from the first fusion to the friends you trade with. Pick a part to jump to it.</p>
+          <ol class="chapters" id="chapters">
+            <li><button type="button" data-t="0"><time>0:00</time>Fusion</button></li>
+            <li><button type="button" data-t="11"><time>0:11</time>Extraction</button></li>
+            <li><button type="button" data-t="19"><time>0:19</time>Genetics and breeding</button></li>
+            <li><button type="button" data-t="33"><time>0:33</time>Wild harvest</button></li>
+            <li><button type="button" data-t="38"><time>0:38</time>Open space</button></li>
+            <li><button type="button" data-t="49"><time>0:49</time>Planet dungeons</button></li>
+            <li><button type="button" data-t="59"><time>0:59</time>Survival</button></li>
+            <li><button type="button" data-t="73.5"><time>1:13</time>Your planet</button></li>
+            <li><button type="button" data-t="83.5"><time>1:23</time>Home realms</button></li>
+            <li><button type="button" data-t="92.5"><time>1:32</time>Friends and trading</button></li>
+            <li><button type="button" data-t="103.5"><time>1:43</time>Enhancing and puzzles</button></li>
+            <li><button type="button" data-t="111.5"><time>1:51</time>Secrets</button></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
     <!-- ───────── FUSION: the first four Lets, what two of them make, and what a child inherits ───────── -->
     <section class="section fusion" id="fusion">
       <div class="wrap">
@@ -83,7 +125,7 @@
           <p class="lede">Fire, Water, Earth and Air are where every collection starts. Fuse two Lets and you usually get a Let of a new element. Which one is for you to find in the game. Pick two below.</p>
         </header>
 
-        <div class="fuse-stage bracketed" id="fuse-stage">
+        <div class="fuse-stage panel-glass" id="fuse-stage">
           <canvas id="fuse-canvas" aria-hidden="true"></canvas>
           <p class="fuse-label" id="fuse-a"></p>
           <p class="fuse-label" id="fuse-b"></p>
@@ -101,7 +143,7 @@
             <p>Two of each Alchemon's stats are Dominant and pass down more reliably. Fusing within a family only reshuffles what the parents have. Crossing two families with the right recipe is the only way a line climbs past both of them.</p>
             <p>The perfect Alchemon isn't found. It's bred, one generation at a time.</p>
           </div>
-          <div class="potentials bracketed" id="potentials" aria-live="polite"></div>
+          <div class="potentials panel-glass" id="potentials" aria-live="polite"></div>
         </div>
 
         <ul class="genes">
@@ -124,35 +166,12 @@
         </header>
 
         <div class="biome-viewer">
-          <div class="biome-window bracketed">
+          <div class="biome-window panel-glass">
             <canvas id="biome-canvas" aria-hidden="true"></canvas>
             <img id="biome-still" src="/assets/biomes/sky.webp" alt="Skyward Reach biome" width="1920" height="1056" loading="lazy">
             <p class="biome-caption"><span id="biome-name">Skyward Reach</span><span id="biome-line">Floating stone islands over the clouds, gold at sunset and silver under the moon.</span></p>
           </div>
           <ul class="portals" id="portals" aria-label="Biomes"></ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────── TRAILER ───────── -->
-    <section class="section trailer" id="trailer">
-      <div class="wrap trailer-grid">
-        <div class="phone">
-          <video id="trailer-video" src="/assets/media/trailer.mp4" poster="/assets/media/poster.jpg" playsinline preload="none" controls></video>
-        </div>
-        <div class="trailer-copy">
-          <p class="eyebrow">Trailer</p>
-          <h2>Gameplay trailer</h2>
-          <ol class="chapters" id="chapters">
-            <li><button data-t="0">Fusion</button></li>
-            <li><button data-t="12">Extraction</button></li>
-            <li><button data-t="21">Space travel</button></li>
-            <li><button data-t="29">Planet dungeons</button></li>
-            <li><button data-t="35">Survival</button></li>
-            <li><button data-t="38.5">Wild harvest</button></li>
-            <li><button data-t="45">Your home planet</button></li>
-            <li><button data-t="63">Enhancing, puzzles and the altar</button></li>
-          </ol>
         </div>
       </div>
     </section>
@@ -163,7 +182,7 @@
         <header class="section-head">
           <p class="eyebrow">Game modes</p>
           <h2 class="quote">You follow the ship beyond the world that soothed you.<span>Something there remembers your work.</span></h2>
-          <p class="lede">The Alchemons you breed are the ones you take into the wild, into open space and down into its planets.</p>
+          <p class="lede">The Alchemons you breed are the ones you take into the wild, into open space and down into its planets. Between runs they live on your planet, where your friends can visit them.</p>
         </header>
 
         <div class="bento">
@@ -171,7 +190,7 @@
             <img style="--focus:50% 78%" src="/assets/media/cards/wild.webp" alt="Wild Alchemons in the Verdant Valley at sunset" loading="lazy" width="530" height="496">
             <div class="card-copy">
               <h3>The wild</h3>
-              <p>Harvest wild Alchemons by day and night, or fuse with the ones you find there.</p>
+              <p>Harvest wild Alchemons in eight realms, by day and by night, or fuse with the ones you find. A wild fusion can come out mutated.</p>
             </div>
           </article>
           <article class="card">
@@ -189,10 +208,17 @@
             </div>
           </article>
           <article class="card">
+            <img style="--focus:50% 70%" src="/assets/media/cards/altar.webp?v=2" alt="Relics in grains circling the Mystic altar" loading="lazy" width="640" height="776">
+            <div class="card-copy">
+              <h3>Relics and Mystics</h3>
+              <p>Beat a planet's guardian, bring its relic to the altar, and summon a Mystic.</p>
+            </div>
+          </article>
+          <article class="card">
             <img style="--focus:60% 50%" src="/assets/media/cards/survival.webp" alt="Alchemons defending a glowing core from enemy waves" loading="lazy" width="640" height="800">
             <div class="card-copy">
               <h3>Survival</h3>
-              <p>Hold the core against endless waves, with a mastery tree for each family.</p>
+              <p>Hold the core against endless waves. Each of the eight families has its own mastery tree.</p>
             </div>
           </article>
           <article class="card">
@@ -202,23 +228,30 @@
               <p>45 levels built on the fusion rules. Solve each in fewer moves for more stars.</p>
             </div>
           </article>
-          <article class="card card-wide">
-            <img style="--focus:50% 62%" src="/assets/biomes/tidal.webp" alt="The Tidal Shelf at sunset, with Alchemons living on the rocks" loading="lazy" width="1760" height="1206">
+          <article class="card">
+            <img style="--focus:50% 50%" src="/assets/media/cards/planet.jpg" alt="An orange home planet with a ring of grains" loading="lazy" width="720" height="540">
             <div class="card-copy">
-              <h3>A home realm</h3>
-              <p>Choose a realm to live in and furnish it with scenery, weather, keepsakes and decor. Each realm keeps its own residents.</p>
+              <h3>Your planet</h3>
+              <p>Choose your planet's size, colour and effects in the Customization Lab, and fit out your ship.</p>
             </div>
           </article>
           <article class="card">
-            <img style="--focus:50% 62%" src="/assets/media/cards/altar.webp?v=2" alt="Relics in grains circling the Mystic altar" loading="lazy" width="640" height="776">
+            <img style="--focus:50% 62%" src="/assets/biomes/tidal.webp" alt="The Tidal Shelf at sunset, with Alchemons living on the rocks" loading="lazy" width="1760" height="1206">
             <div class="card-copy">
-              <h3>Relics and Mystics</h3>
-              <p>Beat a planet's guardian, bring its relic to the altar, and summon a Mystic.</p>
+              <h3>A home realm</h3>
+              <p>Pick the realm under your planet and furnish it with scenery, weather, keepsakes and decor. Up to twelve Alchemons live in each.</p>
+            </div>
+          </article>
+          <article class="card">
+            <img style="--focus:50% 40%" src="/assets/media/cards/trade.jpg" alt="A friend's trade table, with the Alchemon they are offering" loading="lazy" width="720" height="540">
+            <div class="card-copy">
+              <h3>Friends and trading</h3>
+              <p>Add friends by code, visit their planets and homes, and trade Alchemons one for one, three times a week.</p>
             </div>
           </article>
         </div>
 
-        <p class="play-foot">Plays offline · Cloud saves optional · <a href="/play/">Play in your browser</a></p>
+        <p class="play-foot">Plays offline · Sign in for cloud saves, friends and trading · <a href="/play/">Play in your browser</a></p>
       </div>
     </section>
 
@@ -254,6 +287,7 @@
     <div class="wrap footer-inner">
       <a class="footer-brand" href="/"><img src="/assets/brand/logo.webp" alt="Alchemons" width="160" height="40" loading="lazy"></a>
       <nav class="footer-links" aria-label="Footer">
+        <a href="/play/">Play</a>
         <a href="/press/">Press kit</a>
         <a href="/privacy/">Privacy</a>
         <a href="mailto:hello@alchemons.com">Contact</a>
@@ -262,12 +296,12 @@
     </div>
   </footer>
 
-  <script src="/js/grains.js?v=3" defer></script>
-  <script src="/js/valley-scene.js?v=3" defer></script>
-  <script src="/js/valley.js?v=3" defer></script>
-  <script src="/js/fusion.js?v=3" defer></script>
-  <script src="/js/site.js?v=3" defer></script>
-  <script type="module" src="/js/waitlist.js?v=3"></script>
+  <script src="/js/grains.js?v=4" defer></script>
+  <script src="/js/valley-scene.js?v=4" defer></script>
+  <script src="/js/valley.js?v=4" defer></script>
+  <script src="/js/fusion.js?v=4" defer></script>
+  <script src="/js/site.js?v=4" defer></script>
+  <script type="module" src="/js/waitlist.js?v=4"></script>
   <script>
     // Store buttons appear once js/stores.js has their links.
     (function () {
