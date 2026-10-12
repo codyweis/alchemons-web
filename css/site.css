@@ -204,32 +204,9 @@ h3.quote { font-size: clamp(24px, 2.5vw, 32px); }
   .let-grid button::after { font-size: 8px; letter-spacing: .14em; }
 }
 
-.breeding { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(28px, 4vw, 56px); align-items: center; margin-top: clamp(64px, 8vw, 104px); }
+.breeding { max-width: 720px; margin-top: clamp(64px, 8vw, 104px); }
 .breeding-copy h3 { margin-bottom: 20px; }
 .breeding-copy p:not(.eyebrow) { font-size: 15px; font-weight: 300; color: #c9c5bd; line-height: 1.75; }
-.potentials { padding: 22px 22px 18px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
-.pot-hint { margin: 0; text-align: center; color: var(--muted); font-size: 14px; font-weight: 300; }
-.pot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-.pot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.pot-col li { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; align-items: center; }
-.pot-name { margin: 0 0 12px; font-size: 10.5px; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); }
-.pot-child { padding: 0 18px; border-inline: 1px solid var(--line); }
-.pot-child .pot-name { color: var(--cream); letter-spacing: .34em; }
-.pot-col.is-empty .pot-name { color: var(--faint); }
-.pot-label { font-size: 11px; color: var(--muted); }
-.pot-label em, .pot-legend em { font-style: normal; color: var(--gold); margin-left: .45em; font-size: 9px; }
-.pot-col b { font-size: 12px; font-weight: 500; color: #ecebe6; font-variant-numeric: tabular-nums; }
-.pot-bar { grid-column: 1 / -1; height: 4px; background: rgba(255, 255, 255, .07); }
-.pot-bar i { display: block; height: 100%; transition: width .6s cubic-bezier(.2, .7, .2, 1); }
-.pot-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
-.pot-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.pot-legend span i { width: 10px; height: 4px; }
-.pot-legend em { margin: 0; }
-.pot-legend .btn { margin-left: auto; }
-.pot-note { justify-content: center; }
-@media (max-width: 860px) { .breeding { grid-template-columns: 1fr; } }
-.pot-short { display: none; }
-@media (max-width: 480px) { .potentials { padding: 18px 16px 16px; } .pot-cols { gap: 14px; } .pot-child { padding: 0 14px; } .pot-full { display: none; } .pot-short { display: inline; } .pot-legend .btn { margin-left: 0; } }
 
 .genes { list-style: none; margin: clamp(44px, 6vw, 68px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .genes li { background: var(--void); padding: 24px 22px; }

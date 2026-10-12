@@ -1,8 +1,7 @@
 /* Fusion — pick two of the first four Lets and fuse them, as the game does: both
    come apart into their grains, the grains turn together and bloom pale, then
    gather into what the recipe makes. What that is stays a secret here: it
-   arrives as a shape in ink. The child's Potentials are inherited by the game's
-   own rule (lib/models/potential_genetics.dart) from example parents. */
+   arrives as a shape in ink. */
 (() => {
   const G = window.Grains;
   const stage = document.getElementById('fuse-stage');
@@ -12,13 +11,11 @@
   const grid = document.getElementById('let-grid');
   const formula = document.getElementById('formula');
   const descEl = document.getElementById('fuse-desc');
-  const potEl = document.getElementById('potentials');
   const labels = [document.getElementById('fuse-a'), document.getElementById('fuse-b')];
   const reduce = G.reduceMotion;
   const ORDER = Object.keys(G.E);
   const key = (a, b) => [a, b].sort((x, y) => ORDER.indexOf(x) - ORDER.indexOf(y)).join('+');
   const WHITE = [255, 255, 255], INK = [9, 10, 14];
-  const STATS = [['speed', 'Speed', 'Spd'], ['strength', 'Strength', 'Str'], ['intelligence', 'Intelligence', 'Int'], ['beauty', 'Beauty', 'Bea']];
 
   let lets = [], byId = {}, results = {};
 
@@ -60,7 +57,7 @@
 
   // slots[0], slots[1]: { c, sh, t0 }; made: the secret once it has formed
   const slots = [null, null];
-  let made = null, fusion = null, pending = null, lastPair = null, rolls = 0;
+  let made = null, fusion = null, pending = null, lastPair = null;
   const now = () => performance.now() / 1000;
 
   function glow(ctx, x, y, r, rgb, a) {
@@ -208,59 +205,6 @@
     }
   }
 
-  // ── Potentials, by the game's rule for a fusion inside one family: it reshuffles what the parents have ──
-  function rng(seed) { // mulberry32
-    return () => { seed |= 0; seed = seed + 0x6d2b79f5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; };
-  }
-  function inherit(A, B, seed) {
-    const r = rng(seed), pot = {}, from = {};
-    for (const [s] of STATS) {
-      // each stat on its own: parent A's, parent B's (Dominants lean harder), or a stranger no better than the better parent
-      const aD = A.dominants.includes(s), bD = B.dominants.includes(s);
-      let sa = 0.2, sb = 0.2;
-      if (aD && bD) { sa += 0.06; sb += 0.06; } else if (aD) sa += 0.12; else if (bD) sb += 0.12;
-      const roll = r();
-      if (roll < sa) { pot[s] = A.potentials[s]; from[s] = 'a'; }
-      else if (roll < sa + sb) { pot[s] = B.potentials[s]; from[s] = 'b'; }
-      else { pot[s] = 1 + Math.floor(r() * Math.max(A.potentials[s], B.potentials[s])); from[s] = 'new'; }
-    }
-    // one Dominant from each parent, and now and then a stat neither had
-    let first = A.dominants[(r() * 2) | 0], second = B.dominants[(r() * 2) | 0];
-    if (first === second) {
-      const pool = [...new Set([...A.dominants, ...B.dominants])].filter((s) => s !== first);
-      second = pool.length ? pool[(r() * pool.length) | 0] : STATS.find(([s]) => s !== first)[0];
-    }
-    if (r() < 0.12) {
-      const outside = STATS.map(([s]) => s).filter((s) => s !== first && s !== second), d = outside[(r() * outside.length) | 0];
-      if (r() < 0.5) first = d; else second = d;
-    }
-    return { potentials: pot, dominants: [first, second], from };
-  }
-
-  function column(name, tint, child, pots, dominants, from, a, b) {
-    const rows = STATS.map(([s, label, short]) => {
-      const v = pots[s], src = from ? from[s] : null;
-      const fill = src === 'a' ? G.E[a.type].tint : src === 'b' ? G.E[b.type].tint : src === 'new' ? 'var(--gold)' : tint;
-      const dom = dominants.includes(s) ? '<em title="Dominant">◆</em>' : '';
-      return `<li><span class="pot-label"><span class="pot-full">${label}</span><span class="pot-short">${short}</span>${dom}</span><b>${v}</b><span class="pot-bar"><i style="width:${v}%;background:${fill}"></i></span></li>`;
-    }).join('');
-    return `<div class="pot-col${child ? ' pot-child' : ''}"><p class="pot-name"${tint ? ` style="color:${tint}"` : ''}>${name}</p><ul>${rows}</ul></div>`;
-  }
-  function showPotentials() {
-    const a = slots[0]?.c || lastPair?.[0], b = slots[1]?.c || lastPair?.[1];
-    if (!a) { potEl.innerHTML = '<p class="pot-hint">Pick two Lets above to see what their child inherits.</p>'; return; }
-    const kid = made && lastPair ? inherit(a, b, lastPair.seed) : null;
-    const cols = [
-      column(a.name, G.E[a.type].tint, false, a.potentials, a.dominants),
-      kid ? column('???', null, true, kid.potentials, kid.dominants, kid.from, a, b) : `<div class="pot-col pot-child is-empty"><p class="pot-name">${b ? 'Fusing…' : 'Child'}</p></div>`,
-      b ? column(b.name, G.E[b.type].tint, false, b.potentials, b.dominants) : '<div class="pot-col is-empty"><p class="pot-name">Pick another</p></div>',
-    ];
-    const legend = kid
-      ? `<div class="pot-legend"><span><i style="background:${G.E[a.type].tint}"></i>from ${a.name}</span><span><i style="background:${G.E[b.type].tint}"></i>from ${b.name}</span><span><i style="background:var(--gold)"></i>new roll</span><span><em>◆</em>Dominant</span><button type="button" class="btn btn-ghost btn-sm" id="fuse-again">Fuse again</button></div>`
-      : '<p class="pot-legend pot-note">Example Potentials. Every Alchemon you raise has its own.</p>';
-    potEl.innerHTML = `<div class="pot-cols">${cols.join('')}</div>${legend}`;
-  }
-
   // ── words ──
   const op = (s) => `<span class="op">${s}</span>`;
   const tinted = (c) => `<span style="color:${G.E[c.type].tint}">${c.name}</span>`;
@@ -283,7 +227,6 @@
   }
   function refresh() {
     grid.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', slots.some((s) => s?.c === byId[b.dataset.id])));
-    showPotentials();
   }
 
   function settle() {
@@ -324,19 +267,10 @@
     place(1, b);
     const p = pending = { sh: null };
     shadowSheet(results[key(a.type, b.type)]).then((sh) => { p.sh = sh; });
-    lastPair = Object.assign([a, b], { seed: (ORDER.indexOf(a.type) * 7 + ORDER.indexOf(b.type)) * 1000 + rolls++ });
+    lastPair = [a, b];
     setFormula(`${tinted(a)}${op('+')}${tinted(b)}${op('→')}<span class="formula-hint">?</span>`, G.E[a.type].tint);
     describe(b);
   }
-  potEl.addEventListener('click', (e) => {
-    if (!e.target.closest('#fuse-again') || !lastPair) return;
-    userActed = true;
-    const [a, b] = lastPair;
-    fusion = made = pending = null; slots[0] = slots[1] = null;
-    fuse(a, b);
-    refresh();
-  });
-
   // ── start ──
   let userActed = false;
   fetch('/assets/data/fusion.json').then((r) => r.json()).then((data) => {
@@ -347,7 +281,6 @@
       <span class="sprite" style="background-image:url(/assets/creatures/${c.id}.webp?v=2);--frames:${c.frames};--ms:${c.ms}ms"></span></button></li>`).join('');
     grid.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { userActed = true; choose(b.dataset.id); } });
     for (const c of lets) letSheet(c);
-    showPotentials();
     G.whileVisible(canvas, draw, { fps: 60 });
     // the first time it's seen, fuse the pair the game starts you with
     new IntersectionObserver(([en], io) => {
