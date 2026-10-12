@@ -179,6 +179,7 @@ h3.quote { font-size: clamp(24px, 2.5vw, 32px); }
 .formula-hint { color: var(--muted); }
 .formula .secret { color: var(--cream); letter-spacing: .3em; }
 .fuse-desc { min-height: 3.4em; max-width: 640px; margin: 18px auto 26px; text-align: center; font-family: var(--story); font-size: 18px; font-style: italic; color: #cfcac1; line-height: 1.5; }
+.fuse-desc.is-note { font-family: var(--font); font-style: normal; font-size: 14px; color: var(--muted); text-wrap: balance; }
 .fuse-desc strong { font-family: var(--title); font-style: normal; font-weight: 500; font-size: 15px; letter-spacing: .06em; color: var(--cream); margin-right: .6em; }
 .fuse-desc span { font-family: var(--font); font-style: normal; font-size: 10px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); margin-right: 1em; }
 @media (max-width: 520px) { .fuse-label { font-size: 13px; } .formula { font-size: 10px; letter-spacing: .14em; } .formula .op { margin: 0 .4em; } }

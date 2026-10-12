@@ -213,6 +213,7 @@
     stage.style.setProperty('--tint', tint || '#e9c46a');
   }
   function describe(c) {
+    descEl.classList.remove('is-note');
     descEl.innerHTML = c ? `<strong>${c.name}</strong><span>${c.type} · ${c.rarity}</span>${c.desc}` : '';
   }
   function placeLabels(g) {
@@ -233,7 +234,8 @@
     const [a, b] = lastPair, r = results[key(a.type, b.type)];
     const rest = r.rest.map(([n, v]) => `${n} ${v}%`).join(' · ');
     setFormula(`${tinted(a)}${op('+')}${tinted(b)}${op('→')}<span class="secret">???</span><span class="pct">${r.odds}%</span><span class="odds">or ${rest}</span>`);
-    descEl.innerHTML = '<strong>???</strong>Something new. What it is, you find out when you fuse them yourself.';
+    descEl.classList.add('is-note');
+    descEl.textContent = 'The result is hidden here. Fuse these two in the game to see it.';
     label(0, null); label(1, null);
     slots[0] = slots[1] = null;
     refresh();
